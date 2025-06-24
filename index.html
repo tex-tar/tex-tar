@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <meta name="description" content="TexTAR – Textual Attribute Recognition in Multi-domain and Multi-lingual Document Images."/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description"
+        content="TexTAR – Textual Attribute Recognition in Multi-domain and Multi-lingual Document Images"/>
   <title>TexTAR – Textual Attribute Recognition</title>
 
-  <!-- Fonts & Bulma -->
+  <!-- Google Font & Bulma CSS -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"/>
 
-  <!-- Font-awesome icons -->
+  <!-- Icons -->
   <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
 
   <style>
+    /* ————— base ————— */
     html,body{font-family:"Inter",sans-serif}
 
     /* hero gradient */
@@ -24,38 +28,59 @@
     /* utilities */
     .btn-pill{border-radius:9999px}
     .shadow {box-shadow:0 4px 14px rgba(0,0,0,.08)}
+    .section-heading{margin-bottom:2.5rem}
 
-    /* tick / cross helpers */
+    /* ✓ / ✗ helpers */
     .tick  {color:#1db954;font-weight:700;font-size:1.3rem}
     .cross {color:#e63946;font-weight:700;font-size:1.3rem}
     .attr-table th,.attr-table td{vertical-align:middle;text-align:center}
 
-    /* placeholder for word images */
+
+    /* word-image placeholders */
     .img-placeholder{
       width:120px;height:40px;display:inline-block;
       background:#f5f5f5;border:1px dashed #b5b5b5;
     }
 
-    /* one shared width for every equal block (table, pie, pipeline, model) */
+    /* equal-width blocks (table / pie / pipeline / model) */
     :root{--block-size:460px}
     .even-block        {width:var(--block-size);margin:0 auto}
     .even-block img    {width:100%;height:auto}
+
+    /* small tweaks */
+    .navbar-burger{margin-left:0.5rem}
+    .publication-title{line-height:1.15}
   </style>
 </head>
 
 <body>
-<!-- ────────── Hero ────────── -->
+<!-- ═════════════ Navbar ═════════════ -->
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="https://cvit.iiit.ac.in" title="CVIT">
+      <i class="fas fa-home"></i>
+    </a>
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
+       data-target="navMenu">
+      <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+    </a>
+  </div>
+
+  
+</nav>
+
+<!-- ═════════════ Hero ═════════════ -->
 <section class="hero is-light-gradient pb-6">
   <div class="hero-body">
     <div class="container has-text-centered">
-      <h1 class="title is-2 is-spaced mb-2">
+      <h1 class="title is-2 is-spaced publication-title">
         TexTAR – Textual Attribute Recognition in Multi-domain and Multi-lingual Document Images
       </h1>
       <h2 class="subtitle is-4 mb-4">Accepted at ICDAR 2025</h2>
 
       <p class="is-size-5 mb-5">
         Rohan Kumar<sup>1</sup> · Jyothi Swaroopa Jinka<sup>2</sup> ·
-        Ravi Kiran Sarvadevabhatla<sup>3</sup><br/>
+        Ravi Kiran Sarvadevabhatla<sup>3</sup><br>
         International Institute of Information Technology Hyderabad
       </p>
 
@@ -74,45 +99,34 @@
   </div>
 </section>
 
-<!-- ────────── Abstract ────────── -->
+<!-- ═════════════ Abstract ═════════════ -->
 <section class="section">
   <div class="container is-max-desktop">
-    <h2 class="title is-3 has-text-centered mb-4">TexTAR</h2>
-    <div class="content">
-      <p class="is-size-5">
+    <h2 class="title is-1 has-text-centered section-heading">Abstract</h2>
+    <div class="content is-size-4">
+      <p>
         Recognising textual attributes such as <strong>bold</strong>,
         <em>italic</em>, <u>underline</u> and <s>strikeout</s> is essential for
-        understanding text semantics, structure, and visual presentation. These
-        attributes highlight key information, making them crucial for document
-        analysis. Existing methods struggle with computational efficiency or
-        adaptability in noisy, multilingual settings. To address this, we
-        introduce <strong>TexTAR</strong>, a multi-task, context-aware
-        Transformer for Textual Attribute Recognition (TAR). Our novel
-        data-selection pipeline enhances context awareness, and our architecture
-        employs a 2-D RoPE mechanism to incorporate spatial context for more
-        accurate attribute predictions. We also introduce
+        understanding text semantics, structure, and visual presentation.
+        These attributes highlight key information, making them crucial for
+        document analysis. Existing methods struggle with computational
+        efficiency or adaptability in noisy, multilingual settings. To
+        address this, we introduce <strong>TexTAR</strong>, a multi-task,
+        context-aware Transformer for Textual Attribute Recognition&nbsp;(TAR).
+        Our novel data-selection pipeline enhances context awareness, and our
+        architecture employs a 2-D RoPE mechanism to incorporate spatial
+        context for more accurate attribute predictions. We also introduce
         <strong>MMTAD</strong>, a diverse, multilingual, multi-domain dataset
         annotated with text attributes across real-world documents. Extensive
-        evaluations show TexTAR outperforms existing methods, demonstrating that
-        contextual awareness contributes to state-of-the-art TAR performance.
+        evaluations show TexTAR outperforms existing methods, demonstrating
+        that contextual awareness contributes to state-of-the-art TAR
+        performance.
       </p>
     </div>
   </div>
 </section>
 
-<!-- ────────── Dataset samples ────────── -->
-<!-- <section class="section pt-0">
-  <div class="container">
-    <figure class="image is-3by2 shadow">
-      <img src="assets/dataset.png" alt="Dataset samples">
-    </figure>
-    <p class="has-text-centered is-size-6 mt-2">
-      Figure 1 – Example samples from the MMTAD dataset.
-    </p>
-  </div>
-</section> -->
-
-<!-- ────────── Attribute matrix + Pie chart ────────── -->
+<!-- ═════════════ Attribute table + pie chart ═════════════ -->
 <section class="section pt-0">
   <div class="container">
         <h2 class="title is-3 has-text-centered mb-4">Textual Attributes in the dataset</h2>
@@ -123,7 +137,7 @@
           <table class="table is-bordered is-narrow is-fullwidth attr-table">
             <thead>
               <tr>
-                <th rowspan="2">Image</th><th rowspan="2">normal</th>
+                <th rowspan="2">Image</th>
                 <th colspan="2">T<sub>1</sub></th><th colspan="2">T<sub>2</sub></th>
               </tr>
               <tr>
@@ -131,41 +145,83 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td><img src="figures/ex1.png" alt="word-1"></td>
-                <td>–</td><td class="cross">✗</td><td class="cross">✗</td>
-                <td class="cross">✗</td><td class="cross">✗</td>
-              </tr>
-              <tr>
-                <td><span class="img-placeholder"></span></td>
-                <td>–</td><td class="cross">✗</td><td class="cross">✗</td>
-                <td class="tick">✓</td><td class="cross">✗</td>
-              </tr>
-              <tr>
-                <td><img src="figures/ex3.png" alt="word-3"></td>
-                <td>–</td><td class="tick">✓</td><td class="cross">✗</td>
-                <td class="tick">✓</td><td class="cross">✗</td>
-              </tr>
-              <tr>
-              <td><span class="img-placeholder"></span></td>
-              <td>–</td><td class="cross">✗</td><td class="cross">✗</td>
-              <td class="tick">✓</td><td class="tick">✓</td>
-            </tr>
-            <tr>
-              <td><span class="img-placeholder"></span></td>
-              <td>–</td><td class="tick">✓</td><td class="tick">✓</td>
-              <td class="cross">✗</td><td class="cross">✗</td>
-            </tr>
-            <tr>
-              <td><span class="img-placeholder"></span></td>
-              <td>–</td><td class="cross">✗</td><td class="tick">✓</td>
-              <td class="tick">✓</td><td class="cross">✗</td>
-            </tr>
-            <tr>
-              <td><span class="img-placeholder"></span></td>
-              <td>–</td><td class="tick">✓</td><td class="cross">✗</td>
-              <td class="cross">✗</td><td class="tick">✓</td>
-            </tr>
+    <tr style="height:40px;text-align:center;vertical-align:middle;">
+      <td>
+        <img src="figures/hc.png" alt="word-1"
+             style="height:36px;width:auto;display:block;margin:0 auto;object-fit:contain;">
+      </td>
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+    </tr>
+
+    <!-- Row 2 -->
+    <tr style="height:40px;text-align:center;vertical-align:middle;">
+      <td>
+        <img src="figures/u-spanish.png" alt="u-spanish"
+             style="height:36px;width:auto;display:block;margin:0 auto;object-fit:contain;">
+      </td>
+      
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+      <td style="color:#1db954;font-weight:700;font-size:1.3rem;">✓</td>
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+    </tr>
+
+    <!-- Row 3 -->
+    <tr style="height:40px;text-align:center;vertical-align:middle;">
+      <td>
+        <img src="figures/ub-punjabi.png" alt="ub-punjabi"
+             style="height:36px;width:auto;display:block;margin:0 auto;object-fit:contain;">
+      </td>
+      <td style="color:#1db954;font-weight:700;font-size:1.3rem;">✓</td>
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+      <td style="color:#1db954;font-weight:700;font-size:1.3rem;">✓</td>
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+    </tr>
+    <tr style="height:40px;text-align:center;vertical-align:middle;">
+      <td>
+        <img src="figures/us-telugu.png" alt="ub-punjabi"
+             style="height:36px;width:auto;display:block;margin:0 auto;object-fit:contain;">
+      </td>
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+      <td style="color:#1db954;font-weight:700;font-size:1.3rem;">✓</td>
+      <td style="color:#1db954;font-weight:700;font-size:1.3rem;">✓</td>
+    </tr>
+    <tr style="height:40px;text-align:center;vertical-align:middle;">
+      <td>
+        <img src="figures/bi.png" alt="ub-punjabi"
+             style="height:36px;width:auto;display:block;margin:0 auto;object-fit:contain;">
+      </td>
+      <td style="color:#1db954;font-weight:700;font-size:1.3rem;">✓</td>
+      <td style="color:#1db954;font-weight:700;font-size:1.3rem;">✓</td>
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+    </tr>
+    <tr style="height:40px;text-align:center;vertical-align:middle;">
+      <td>
+        <img src="figures/iu.png" alt="ub-punjabi"
+             style="height:36px;width:auto;display:block;margin:0 auto;object-fit:contain;">
+      </td>
+      
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+      <td style="color:#1db954;font-weight:700;font-size:1.3rem;">✓</td>
+      <td style="color:#1db954;font-weight:700;font-size:1.3rem;">✓</td>
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+    </tr>
+    <tr style="height:40px;text-align:center;vertical-align:middle;">
+      <td>
+        <img src="figures/bs.png" alt="ub-punjabi"
+             style="height:36px;width:auto;display:block;margin:0 auto;object-fit:contain;">
+      </td>
+      <td style="color:#1db954;font-weight:700;font-size:1.3rem;">✓</td>
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+      <td style="color:#e63946;font-weight:700;font-size:1.3rem;">✗</td>
+      <td style="color:#1db954;font-weight:700;font-size:1.3rem;">✓</td>
+
+    </tr>
             </tbody>
           </table>
         </div>
@@ -184,91 +240,100 @@
   </div>
 </section>
 
-<!-- <section class="section pt-0">
-  <div class="container has-text-centered">
-        <h2 class="title is-3 has-text-centered mb-4">Data selection Pipeline</h2>
-    <figure class="image shadow">
-     
-      <img src="figures/data-selection-pipeline.png"
-           alt="Data Selection Pipeline"
-           style="height:700px;  width:auto;  object-fit:contain;">
-    </figure>
 
-    <p class="is-size-6 mt-2">
-      Data Selection Pipeline
-    </p>
-  </div>
-</section> -->
-
+<!-- ═════════════ Data-selection pipeline ═════════════ -->
 <section class="section pt-0">
   <div class="container has-text-centered">
-    <h2 class="title is-3 has-text-centered mb-4">Model Architecture</h2>
-
-    <!-- centred figure -->
-    <figure class="image shadow" style="margin:0 auto;">
-      <img src="figures/model.png"
-           alt="Model architecture"
-           style="height:500px; width:auto;">
+    <h2 class="title is-3 has-text-centered section-heading">Data-selection Pipeline</h2>
+    <figure class="image shadow" style="margin:0 auto; max-width:900px;">
+      <img src="figures/data-selection-pipeline.png" alt="Data Selection Pipeline">
     </figure>
-
-    <p class="is-size-6 mt-2">Model architecture.</p>
   </div>
 </section>
 
-<!-- ────────── SOTA table ────────── -->
+<!-- ═════════════ Model architecture ═════════════ -->
+<section class="section pt-0">
+  <div class="container has-text-centered">
+    <h2 class="title is-3 has-text-centered section-heading">Model Architecture</h2>
+    <figure class="image shadow" style="margin:0 auto; max-width:900px;">
+      <img src="figures/model.png" alt="Model Architecture">
+    </figure>
+  </div>
+</section>
+
+<!-- ═════════════ SOTA table ═════════════ -->
 <section class="section">
   <div class="container">
-    <h2 class="title is-3 has-text-centered mb-4">
+    <h2 class="title is-3 has-text-centered section-heading">
       Comparison with State-of-the-Art Approaches
     </h2>
 
     <div class="table-container">
-      <table class="table is-bordered is-striped is-narrow is-fullwidth has-text-centered">
+      <table class="table is-bordered is-striped is-narrow is-fullwidth"
+             style="text-align:center;">    <!-- forces horizontal centering -->
         <thead>
-          <tr>
-            <th rowspan="2">Methods</th><th rowspan="2">normal</th>
-            <th colspan="3">T<sub>1</sub> group</th><th colspan="3">T<sub>2</sub> group</th>
+          <!-- first header row -->
+          <tr style="text-align: center;">   <!-- vertical centering -->
+            <th rowspan="2">Methods</th>
+            <th rowspan="2">normal</th>
+
+            <!-- group headers -->
+            <th colspan="3">T<sub>1</sub> group</th>
+            <th colspan="3">T<sub>2</sub> group</th>
+
             <th rowspan="2">Average</th>
           </tr>
-          <tr>
+
+          <!-- second header row -->
+          <tr style="vertical-align:middle;">
             <th>bold</th><th>italic</th><th>b&nbsp;&amp;&nbsp;i</th>
             <th>underline</th><th>strikeout</th><th>u&nbsp;&amp;&nbsp;s</th>
           </tr>
         </thead>
-        <tbody>
+
+        <tbody style="vertical-align:middle;">  <!-- vertical centering for body -->
           <!-- Baselines -->
-          <tr class="has-background-light"><th colspan="9" class="has-text-left">Baselines</th></tr>
+          <tr class="has-background-light">
+            <th colspan="9" style="text-align:center;">Baselines</th>
+          </tr>
+
           <tr><td>ResNet-18 [5]</td><td>0.97</td><td>0.75</td><td>0.88</td><td>0.77</td><td>0.68</td><td>0.97</td><td>0.99</td><td>0.86</td></tr>
           <tr><td>ResNet-50 [5]</td><td>0.97</td><td>0.74</td><td>0.89</td><td>0.69</td><td>0.73</td><td>0.98</td><td>0.99</td><td>0.86</td></tr>
           <tr><td>ResNeXt-101 [18]</td><td>0.97</td><td>0.77</td><td>0.91</td><td>0.74</td><td>0.78</td><td>0.99</td><td>0.99</td><td>0.88</td></tr>
           <tr><td>EfficientNet-b4 [15]</td><td>0.97</td><td>0.75</td><td>0.90</td><td>0.62</td><td>0.75</td><td>0.98</td><td>0.99</td><td>0.85</td></tr>
+
           <!-- Variants -->
-          <tr class="has-background-light"><th colspan="9" class="has-text-left">Variants</th></tr>
+          <tr class="has-background-light">
+            <th colspan="9" style="text-align:center;">Variants</th>
+          </tr>
+
           <tr><td>DeepFont [17]</td><td>0.97</td><td>0.72</td><td>0.80</td><td>0.44</td><td>0.64</td><td>0.93</td><td>0.98</td><td>0.78</td></tr>
           <tr><td>DropRegion† [21]</td><td>0.98</td><td>0.77</td><td>0.90</td><td>0.61</td><td>0.75</td><td>0.97</td><td>0.99</td><td>0.85</td></tr>
           <tr><td>MTL [9]</td><td>0.97</td><td>0.75</td><td>0.89</td><td>0.64</td><td>0.70</td><td>0.97</td><td>0.99</td><td>0.84</td></tr>
           <tr><td>TaCo† [10]</td><td>0.97</td><td>0.79</td><td>0.90</td><td>0.60</td><td>0.78</td><td>0.86</td><td>0.89</td><td>0.83</td></tr>
           <tr><td>CONSENT† [12]</td><td>0.98</td><td>0.86</td><td>0.93</td><td>0.84</td><td>0.81</td><td>0.96</td><td>0.98</td><td>0.91</td></tr>
+
           <!-- Ours -->
           <tr class="has-background-grey-light has-text-weight-bold">
-            <td>TexTAR (Ours)</td><td>0.99</td><td>0.92</td><td>0.95</td><td>0.90</td><td>0.87</td><td>0.99</td><td>0.99</td><td>0.94</td>
+            <td>TexTAR (Ours)</td><td>0.99</td><td>0.92</td><td>0.95</td>
+            <td>0.90</td><td>0.87</td><td>0.99</td><td>0.99</td><td>0.94</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <p class="subtitle is-6 has-text-centered mt-4">
-      All scores are F<sub>1</sub>. <em>u &amp; s</em> = underline &amp strikeout,
-      <em>b &amp i</em> = bold &amp italic. † = our re-implementation.
+    <p class="is-size-6 has-text-centered mt-4">
+      All scores are F<sub>1</sub>. <em>u &amp; s</em> = underline &amp; strikeout,&nbsp;
+      <em>b &amp; i</em> = bold &amp; italic. † = our re-implementation.
     </p>
   </div>
 </section>
 
-<!-- ────────── Citation ────────── -->
+<!-- ═════════════ Citation ═════════════ -->
 <section class="section pt-0">
   <div class="container is-max-desktop">
     <h3 class="title is-4 mb-3">Citation</h3>
-    <pre class="box"><code>@article{Kumar2025TexTAR,
+<pre class="box"><code>@article{Kumar2025TexTAR,
   title   = {TexTAR: Textual Attribute Recognition in Multi-domain and Multi-lingual Document Images},
   author  = {Rohan Kumar and Jyothi Swaroopa Jinka and Ravi Kiran Sarvadevabhatla},
   journal = {arXiv},
@@ -277,7 +342,7 @@
   </div>
 </section>
 
-<!-- ────────── Acknowledgements & Contact ────────── -->
+<!-- ═════════════ Acknowledgements & contact ═════════════ -->
 <section class="section pt-0">
   <div class="container is-max-desktop">
     <h3 class="title is-4 mb-3">Acknowledgements</h3>
@@ -285,14 +350,14 @@
 
     <h3 class="title is-4 mt-5 mb-3">Contact</h3>
     <p>
-      <a href="mailto:rohan.kumar@students.iiit.ac.in">rohan.kumar@students.iiit.ac.in</a><br/>
-      <a href="mailto:jinka.swaroopa@research.iiit.ac.in">jinka.swaroopa@research.iiit.ac.in</a><br/>
+      <a href="mailto:rohan.kumar@students.iiit.ac.in">rohan.kumar@students.iiit.ac.in</a><br>
+      <a href="mailto:jinka.swaroopa@research.iiit.ac.in">jinka.swaroopa@research.iiit.ac.in</a><br>
       <a href="mailto:ravi.kiran@iiit.ac.in">ravi.kiran@iiit.ac.in</a>
     </p>
   </div>
 </section>
 
-<!-- ────────── Footer ────────── -->
+<!-- ═════════════ Footer ═════════════ -->
 <footer class="footer">
   <div class="content has-text-centered">
     <p class="mb-2">
@@ -301,9 +366,21 @@
     </p>
     <p class="is-size-7">
       © 2025 CVIT — adapted from the
-      <a href="https://github.com/nerfies/nerfies.github.io" target="_blank">Nerfies template</a>.
+      <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>.
     </p>
   </div>
 </footer>
+
+<!-- ═════════════ Navbar burger JS ═════════════ -->
+<script>
+document.addEventListener('DOMContentLoaded',() => {
+  const burger = document.querySelector('.navbar-burger');
+  const menu   = document.getElementById(burger.dataset.target || 'navMenu');
+  burger.addEventListener('click',() => {
+    burger.classList.toggle('is-active');
+    menu.classList.toggle('is-active');
+  });
+});
+</script>
 </body>
 </html>
