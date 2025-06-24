@@ -1,0 +1,43 @@
+generate_json:
+  image_folder: "/path/to/your/images"
+  output_json_dir: "/path/to/save/json"
+  load_fine_tune_model: false
+  pretrained_model_path: "/path/to/fine_tuned_model.pt"
+  batch_size: 64
+  device: "cuda:0"
+  extensions:
+    - ".png"
+    - ".jpg"
+    - ".jpeg"
+    - ".tiff"
+    - ".bmp"
+
+context_window:
+  bbjson: "/path/to/bboxes.json"
+  image_folder: "/path/to/your/images"
+  output_file_path: "/path/to/output/crops.json"
+  enable_random: 0
+  seq_size: 125
+  type: "word"
+  pad: "y"
+  aspect_ratio: 1.3334
+
+extract_cw:
+  image_folder: "/path/to/your/images"
+  bbox_json_paths:
+    - "/path/to/bboxes_part1.json"
+    - "/path/to/bboxes_part2.json"
+  cw_json_path: "/path/to/context_windows.json"
+  output_word_crops_path: "/path/to/output/crops/"
+  pad_cropped_frame: "y"
+  context_window_type: "word CW"
+  sequence_size: 100
+  aspect_ratio: 1.3334
+  word_bbox_padding_offset: 0.1
+  extract_attributes:
+    T1: true
+    T2: true
+  
+image_organization:
+  source_folder: "/ssd_scratch/rohan/swaroopajinka/T2_data/word_ONLY/test_augmented_2"
+  dest_folder: "/ssd_scratch/rohan/swaroopajinka/T2_data/word_CW/test_augmented_2"
