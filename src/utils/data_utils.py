@@ -1,7 +1,10 @@
 import numpy as np
 import cv2
 import math
-import random 
+
+
+import random
+import numpy as np  
 np.random.seed(42)
 random.seed(42)
 
@@ -37,6 +40,7 @@ def centralizer(orignal_image,height=170,width=1200):
 
     return plain_image
 
+
 def findCentroidAndReassignCoordinates(bbox_array,h,w,is_pad):
     dimen = bbox_array
     centroid = np.array([0,0,0,0])
@@ -50,78 +54,68 @@ def findCentroidAndReassignCoordinates(bbox_array,h,w,is_pad):
             centroid[3]+=dim[3]+math.ceil(0.10*abs(dim[3]-dim[1]))
     centroid = centroid/len(dimen)
     centroid_toret = [(centroid[1]+centroid[3])/(2*h) , (centroid[0]+centroid[2])/(2*w)]
+    # centroid finalized
     reassigned_array = []
     for dim in dimen:
         coord = (dim - centroid)
         reassigned_array.append([(coord[1]+coord[3])/(2*h),(coord[0]+coord[2])/(2*w)])
     return reassigned_array,centroid_toret
 
-def get_crops_after_expansion(new_bb, counter, dimensions_set, original_dim,
-                              context_window_type: str, aspect_ratio: float, seq_size: int):
+def get_crops_after_expansion(new_bb,counter,dimensions_set,original_dim,args):
     pointer_2 = 0
     crops = []
     cnt=0
 
-    if context_window_type == 'word CW': 
+    if args.type=='word':
+        # normalized_centralized_bb = centralizer(new_bb,height=56,width=400)
         crops.append(new_bb)
         dimensions_set.append(original_dim)
     else:
-        patch_width = math.floor(aspect_ratio * new_bb.shape[0])
-        
-        if patch_width == 0:
-            print(f"  ERROR (get_crops_after_expansion): Calculated patch_width is 0 for H={new_bb.shape[0]}, AR={aspect_ratio}. Returning empty crops.", file=sys.stderr)
-            return []
-
-        while pointer_2 + patch_width < new_bb.shape[1]:
-            if cnt + counter < seq_size: 
-                crops.append(new_bb[:,pointer_2 : pointer_2 + patch_width])
+        while pointer_2+math.floor((args.aspect_ratio)*new_bb.shape[0])<new_bb.shape[1]:
+            if cnt+counter<args.seq_size:
+                crops.append(new_bb[:,pointer_2 : pointer_2+math.floor((args.aspect_ratio)*new_bb.shape[0])])
                 cnt+=1
-                dimensions_set.append([original_dim[0]+pointer_2,original_dim[1],original_dim[0]+pointer_2+patch_width,original_dim[3]])
+                dimensions_set.append([original_dim[0]+pointer_2,original_dim[1],original_dim[0]+pointer_2+math.floor((args.aspect_ratio)*new_bb.shape[0]),original_dim[3]])
             else:
                 return crops
-            pointer_2 += patch_width
+            pointer_2+=math.floor((args.aspect_ratio)*new_bb.shape[0])
             
-        if cnt+counter < seq_size: 
-            if pointer_2-new_bb.shape[1] < -patch_width // 5: 
-                crops.append(new_bb[:,new_bb.shape[1]-patch_width : new_bb.shape[1]])
-                dimensions_set.append([original_dim[0]+new_bb.shape[1]-patch_width,original_dim[1],original_dim[0]+new_bb.shape[1],original_dim[3]])
+        if cnt+counter<args.seq_size:
+            if pointer_2-new_bb.shape[1]<-math.floor((args.aspect_ratio)*new_bb.shape[0])//5:
+                crops.append(new_bb[:,new_bb.shape[1]-math.floor((args.aspect_ratio)*new_bb.shape[0]) : new_bb.shape[1]])
+                dimensions_set.append([original_dim[0]+new_bb.shape[1]-math.floor((args.aspect_ratio)*new_bb.shape[0]),original_dim[1],original_dim[0]+new_bb.shape[1],original_dim[3]])
                 cnt+=1
+    # print(crops)
     return crops
 
-def n_get_blocks(word_bb, counter, dimensions_set, original_dim,
-                 context_window_type: str, aspect_ratio: float, seq_size: int):
+def n_get_blocks(word_bb,counter,dimensions_set,original_dim,args):
 
     h = word_bb.shape[0]
     w = word_bb.shape[1]
 
-
-    if context_window_type == 'word CW': 
-        return get_crops_after_expansion(word_bb,counter,dimensions_set,original_dim=original_dim,
-                                         context_window_type=context_window_type, aspect_ratio=aspect_ratio, seq_size=seq_size) 
-    else: 
-        if w/h >= aspect_ratio: 
-            return get_crops_after_expansion(word_bb,counter,dimensions_set,original_dim=original_dim,
-                                             context_window_type=context_window_type, aspect_ratio=aspect_ratio, seq_size=seq_size) 
+    if args.type=='word':
+        return get_crops_after_expansion(word_bb,counter,dimensions_set,original_dim=original_dim,args=args)
+    else:
+        if w/h >= args.aspect_ratio : 
+            return get_crops_after_expansion(word_bb,counter,dimensions_set,original_dim=original_dim,args=args)
+            # seperate into blocks
         else:
-            desired_width = math.ceil((aspect_ratio*h)) 
-            if desired_width == 0:
-                print(f"  ERROR (n_get_blocks): Desired width is 0 for H={h}, AR={aspect_ratio}. Cannot expand image.", file=sys.stderr)
-                return [] 
-            
-            expand_bb = np.zeros((h,desired_width,3), dtype=np.uint8) 
+            # expand the image
+            desired_width = math.ceil((args.aspect_ratio*h))
+            expand_bb = np.zeros((h,desired_width,3))
+            # repeat the image
             curr_width=0
             while curr_width < desired_width:
-                copy_width = min(w, desired_width - curr_width)
-                if copy_width <= 0: 
-                    break
-                expand_bb[:,curr_width : curr_width + copy_width] = word_bb[:, :copy_width]
-                curr_width += w 
+                expand_bb[:,curr_width : min(w+curr_width,desired_width)] = word_bb[:,:min(w,desired_width-curr_width)]
+                curr_width += w
 
-            return get_crops_after_expansion(expand_bb,counter,dimensions_set,original_dim=original_dim,
-                                             context_window_type=context_window_type, aspect_ratio=aspect_ratio, seq_size=seq_size) 
+            expand_bb = expand_bb.astype(np.uint8)
+        return get_crops_after_expansion(expand_bb,counter,dimensions_set,original_dim=original_dim,args=args)
+    
 def distance_metric(data,a,b):
-    weighted_y = 5 
-    weighted_x = 10 
+    weighted_y = np.random.randint(1, 11)
+    weighted_x = np.random.randint(3*weighted_y,3*11)
+
 
     wx = weighted_x*np.abs(data[:,0]-a)
     wy = weighted_y*np.abs(data[:,1]-b)
@@ -130,194 +124,237 @@ def distance_metric(data,a,b):
     distances = np.max(weighted_arr,axis=1)
     return distances
 
-def nearest_points_from_point(data,bbox_array,image, a, b,
-                              seq_size: int, pad_cropped_frame: str, aspect_ratio: float, context_window_type: str):
+
+def nearest_points_from_point(data,bbox_array,image, a, b,args):
     if len(data) == 0:
-        raise ValueError("Input array of bbox_centres is empty.")
+        raise ValueError("Input array is empty.")
 
     distances = distance_metric(data,a,b)
 
+    # Get the indices of the nearest points
     nearest_order = np.argsort(distances)
 
     counter=0
     iterations = 0
     final_cropped = {}
     dimensions_full_set = []
-
-    while counter < seq_size and iterations < len(nearest_order): 
-        dimensions_set = [] 
+    while counter < args.seq_size and iterations < len(nearest_order):
+        dimensions_set = []
         dim = bbox_array[nearest_order[iterations]]
-
-        if dim[2] <= dim[0] or dim[3] <= dim[1]:
-            print(f"  WARNING: Invalid bbox dimension {dim} for bbox_array[{nearest_order[iterations]}]. Skipping.", file=sys.stderr)
-            iterations += 1
-            continue 
-        extended_dim3 = dim[3]
-        if pad_cropped_frame == 'y': 
+        """
+        ADD PADDING at the bottom to cater to underline
+        """
+        if args.pad=='n':
+            extended_dim3 = dim[3]
+        else:
             extended_dim3 = dim[3]+math.ceil(0.10*abs(dim[3]-dim[1]))
-        
-        y1_slice = max(0, dim[1])
-        y2_slice = min(image.shape[0], extended_dim3)
-        x1_slice = max(0, dim[0])
-        x2_slice = min(image.shape[1], dim[2])
-
-        word_bb_image = image[y1_slice:y2_slice, x1_slice:x2_slice]
-
-        if word_bb_image.size == 0 or word_bb_image.shape[0] == 0 or word_bb_image.shape[1] == 0:
-            print(f"  WARNING: Extracted word_bb_image is empty/invalid for bbox {dim}. Skipping crops generation for this bbox.", file=sys.stderr)
-            iterations += 1
-            continue 
-        crops = n_get_blocks(
-            word_bb_image, 
-            counter,       
-            dimensions_set,
-            original_dim=[dim[0],dim[1],dim[2],extended_dim3], 
-            context_window_type=context_window_type, 
-            aspect_ratio=aspect_ratio,          
-            seq_size=seq_size                    
-        )
-        
-        if not crops: 
-            print(f"  WARNING: n_get_blocks returned no crops for bbox {dim}. Skipping this bbox.", file=sys.stderr)
-            iterations += 1
-            continue
-
-
+        crops= n_get_blocks(image[dim[1]:extended_dim3,dim[0]:dim[2]],counter,dimensions_set,original_dim=[dim[0],dim[1],dim[2],extended_dim3],args=args)
         dimensions_full_set.extend(dimensions_set)
+        # print(len(dimensions_set),"dim set")
        
+
         counter += len(crops)
         final_cropped[nearest_order[iterations]] = crops
         iterations+=1
     
-    if len(dimensions_full_set) != seq_size: 
-            raise ValueError(f"Could not collect at least {seq_size} patches/words for a context window. Found {len(dimensions_full_set)}.")
+    if len(dimensions_full_set)!=args.seq_size:
+            return -1
     
-    return nearest_order[0:iterations], final_cropped, dimensions_full_set, counter
+    return final_cropped,dimensions_full_set,counter
 
-def crop_frame_around_points(choice_set, data, bbox_array, image,
-                             seq_size: int, pad: str, aspect_ratio: float, context_window_type: str):
-    
-    available_choices = choice_set[choice_set != -1]
-    if len(available_choices) == 0:
-        raise ValueError("No unvisited bounding boxes available to choose a starting point from.")
 
-    ind_rand = np.random.choice(available_choices)
+def crop_frame_around_points(choice_set,data,bbox_array,image,args):
+    ind_rand = np.random.choice(choice_set[choice_set!=-1])
     anchor_x,anchor_y = data[ind_rand]
     
     try:
-        visited_indices_in_sequence, cropped_data, dimensions_full_set, cntr = nearest_points_from_point(
-            data=data,
-            bbox_array=bbox_array,
-            image=image,
-            a=anchor_x,
-            b=anchor_y,
-            seq_size=seq_size,
-            pad_cropped_frame=pad, 
-            aspect_ratio=aspect_ratio,
-            context_window_type=context_window_type
-        )
-        if cntr != seq_size:
-            raise ValueError(f"nearest_points_from_point did not return exactly {seq_size} crops.")
-
-        return visited_indices_in_sequence, data[visited_indices_in_sequence], cropped_data, dimensions_full_set
+        cropped_data,dimensions_full_set,cntr = nearest_points_from_point(data,bbox_array,image,anchor_x,anchor_y,args)
+        keys = list(cropped_data.keys())
+        if cntr<args.seq_size:
+            raise("Number of patches in a crop<seq_size!")
+        return keys,data[keys],cropped_data,dimensions_full_set
     except Exception as e:
-        raise RuntimeError(f"Could not make a valid context window: {e}") from e
+        # print(e)
+        return -1
+    
+# def extract_words(page_image,image_path,bbjson,params,extract_dict):
+#     key = image_path.split('/')[-1]
+#     image_path = image_path.split('/')[-1]
+#     # prmath.ceil(extract_dict["offset"])
+#     for bbid in range(len(bbjson[key])):
+#         dim = bbjson[key][bbid]["bb_dim"]
+#         for k in extract_dict:
+#             if(k=="T1"):
+#                 if bbjson[key][bbid]["bb_ids"][0]["attb"]["b+i"]==True:
+#                     cv2.imwrite(f'{extract_dict["T1"]}/3_{image_path}_{bbid}.png',page_image[dim[1]:dim[3] + math.ceil(params["offset"]*abs(dim[3]-dim[1])),dim[0]:dim[2]])
+#                 if bbjson[key][bbid]["bb_ids"][0]["attb"]["bold"]==True:
+#                     cv2.imwrite(f'{extract_dict["T1"]}/1_{image_path}_{bbid}.png',page_image[dim[1]:dim[3] + math.ceil(extract_dict["offset"]*abs(dim[3]-dim[1])),dim[0]:dim[2]])
+#                 if bbjson[key][bbid]["bb_ids"][0]["attb"]["italic"]==True:
+#                     cv2.imwrite(f'{extract_dict["T1"]}/2_{image_path}_{bbid}.png',page_image[dim[1]:dim[3] + math.ceil(extract_dict["offset"]*abs(dim[3]-dim[1])),dim[0]:dim[2]])
+#                 if bbjson[key][bbid]["bb_ids"][0]["attb"]["no_bi"]==True:
+#                     cv2.imwrite(f'{extract_dict["T1"]}/0_{image_path}_{bbid}.png',page_image[dim[1]:dim[3] + math.ceil(extract_dict["offset"]*abs(dim[3]-dim[1])),dim[0]:dim[2]])
 
-def extract_cw(page_image, image_path, bbjson, cw_json, extract_dict, params,
-               pad_cropped_frame: str, context_window_type: str, sequence_size: int, aspect_ratio: float,
-               cw_offset):
+#             if(k=="T2"):
+#                 if bbjson[key][bbid]["bb_ids"][0]["attb"]["u+s"]==True:
+#                     cv2.imwrite(f'{extract_dict["T2"]}/3_{image_path}_{bbid}.png',page_image[dim[1]:dim[3] + math.ceil(extract_dict["offset"]*abs(dim[3]-dim[1])),dim[0]:dim[2]])
+#                 if bbjson[key][bbid]["bb_ids"][0]["attb"]["underlined"]==True:
+#                     cv2.imwrite(f'{extract_dict["T2"]}/1_{image_path}_{bbid}.png',page_image[dim[1]:dim[3] + math.ceil(extract_dict["offset"]*abs(dim[3]-dim[1])),dim[0]:dim[2]])
+#                 if bbjson[key][bbid]["bb_ids"][0]["attb"]["strikeout"]==True:
+#                     cv2.imwrite(f'{extract_dict["T2"]}/2_{image_path}_{bbid}.png',page_image[dim[1]:dim[3] + math.ceil(extract_dict["offset"]*abs(dim[3]-dim[1])),dim[0]:dim[2]])
+#                 if bbjson[key][bbid]["bb_ids"][0]["attb"]["no_us"]==True:
+#                     cv2.imwrite(f'{extract_dict["T2"]}/0_{image_path}_{bbid}.png',page_image[dim[1]:dim[3] + math.ceil(extract_dict["offset"]*abs(dim[3]-dim[1])),dim[0]:dim[2]])
+                    
+def extract_cw(page_image,image_path,bbjson,cw_json,extract_dict,params,args,cw_offset):
     key = image_path.split('/')[-1]
-    image_file_name_only = image_path.split('/')[-1] 
-
+    image_path = image_path.split('/')[-1]
+    
+    # print(image_path)
     context_window_offset = cw_offset
     prev_id = context_window_offset-1
     for cwi in range(len(cw_json[key])):
+        # print(cwi)
         context_window = cw_json[key][cwi]
+        # assert len(context_window)==100
         
+        # print(len(context_window))
         cwid = cwi+context_window_offset
-        error_count=0
+        error=0
         
-        assert cwid == prev_id+1, f"Context window ID mismatch: Expected {prev_id+1}, Got {cwid}"
+        # print(cwid,prev_id)
+        assert cwid == prev_id+1
         
-        num_crops_in_a_window_actual = 0
-        for bbid_str, expected_num_crops_for_bbox in context_window.items(): 
-            bbid = int(bbid_str) 
-            
-            dim = bbjson[key][bbid]["bb_dim"]
+        num_writes=0
+        num_crops_in_a_window = 0
+        for idx,bbid in enumerate(context_window):
+            dim = bbjson[key][int(bbid)]["bb_dim"]
             dimensions_set = []
-            
-            extended_dim3 = dim[3]
-            if pad_cropped_frame == 'y': 
+            """
+            ADD PADDING at the bottom to cater to underline
+            """
+            if args.pad=='n':
+                extended_dim3 = dim[3]
+            else:
                 extended_dim3 = dim[3]+math.ceil(params["offset"]*abs(dim[3]-dim[1]))
-            
-            y1_slice = max(0, dim[1])
-            y2_slice = min(page_image.shape[0], extended_dim3)
-            x1_slice = max(0, dim[0])
-            x2_slice = min(page_image.shape[1], dim[2])
-
-            word_bb_image = page_image[y1_slice:y2_slice, x1_slice:x2_slice]
-
-            if word_bb_image.size == 0 or word_bb_image.shape[0] == 0 or word_bb_image.shape[1] == 0:
-                print(f"  Warning: Empty word_bb_image for {image_file_name_only}, bbid {bbid}. Skipping crops generation for this bbox in extract_cw.", file=sys.stderr)
-                continue
-
-            crops = n_get_blocks(
-                word_bb_image,
-                -1, 
-                dimensions_set,
-                original_dim=[dim[0],dim[1],dim[2],extended_dim3],
-                context_window_type=context_window_type, 
-                aspect_ratio=aspect_ratio,             
-                seq_size=sequence_size                  
-            )
-            
+            crops= n_get_blocks(page_image[dim[1]:extended_dim3,dim[0]:dim[2]],-1,dimensions_set,original_dim=[dim[0],dim[1],dim[2],extended_dim3],args=args)
+            # print(len(crops))
             try:
-                if len(crops) != expected_num_crops_for_bbox:
-                    print(f"  Warning: Mismatch for bbid {bbid} in CW {cwid} ({image_file_name_only}). Expected {expected_num_crops_for_bbox}, Got {len(crops)}. Adjusting list.", file=sys.stderr)
-                    crops = crops[:expected_num_crops_for_bbox] 
-                    error_count += 1 
-
-                num_crops_in_a_window_actual+=len(crops)
-            except Exception as e:
-                print(f"Error processing crops for bbid {bbid} in CW {cwid}: {e}", file=sys.stderr)
-                error_count += 1
-                continue 
-
+                #print(len(crops),context_windo[bbid])
+                assert len(crops)==context_window[bbid]
+                num_crops_in_a_window+=len(crops)
+            except:
+                #print(len(crops),context_window[bbid])
+                crops = crops[:context_window[bbid]]
+                num_crops_in_a_window+=len(crops)
+                error+=1
+                
+            bbid = int(bbid)
             for ind,crop in enumerate(crops):
-                if crop is None or crop.size == 0:
-                    print(f"  Warning: Attempted to save an empty/invalid crop image for bbid {bbid}, crop_idx {ind} in CW {cwid}. Skipping.", file=sys.stderr)
-                    continue
-
                 build_name = ""
-                attb = bbjson[key][bbid].get("bb_ids", [{}])[0].get("attb", {})
+                for k in extract_dict:
+                    if(k=="T1" and extract_dict[k]==True):
+                        # print("hello")
+                        #print(bbjson[key][bbid])
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["b+i"]==True:
+                            build_name+="3-"
+                            # cv2.imwrite(f'{extract_dict["T1"]}/3_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["bold"]==True:
+                            build_name+="1-"
+                            # cv2.imwrite(f'{extract_dict["T1"]}/1_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["italic"]==True:
+                            build_name+="2-"
+                            # cv2.imwrite(f'{extract_dict["T1"]}/2_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["no_bi"]==True:
+                            build_name+="0-"
+                            # cv2.imwrite(f'{extract_dict["T1"]}/0_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        # print(build_name)
 
-                if extract_dict.get("T1", False):
-                    if attb.get("b+i", False): build_name+="3-"
-                    elif attb.get("bold", False): build_name+="1-"
-                    elif attb.get("italic", False): build_name+="2-"
-                    elif attb.get("no_bi", False): build_name+="0-"
-                    else: build_name+="9-" 
-                
-                if extract_dict.get("T2", False):
-                    if attb.get("u+s", False): build_name+="3-"
-                    elif attb.get("underlined", False): build_name+="1-"
-                    elif attb.get("strikeout", False): build_name+="2-"
-                    elif attb.get("no_us", False): build_name+="0-"
-                    else: build_name+="9-" 
+                    elif(k=="T2" and extract_dict[k]==True):
+                        # print("hello")
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["u+s"]==True:
+                            build_name+="3-"
+                            # cv2.imwrite('{extract_dict["T2"]}/3_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["underlined"]==True:
+                            build_name+="1-"
+                            # cv2.imwrite(f'{extract_dict["T2"]}/1_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["strikeout"]==True:
+                            build_name+="2-"
+                            # cv2.imwrite(f'{extract_dict["T2"]}/2_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["no_us"]==True:
+                            build_name+="0-"
+                            # cv2.imwrite(f'{extract_dict["T2"]}/0_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                    elif(k=="T3" and extract_dict[k]== True):
+                        build_name+= str(bbjson[key][bbid]["bb_ids"][0]["attb"]['textcolor_hisam_gmm'])+"-"
+                        '''if bbjson[key][bbid]["bb_ids"][0]["attb"]["redc"]==True:
+                            build_name+="0-"
+                            # cv2.imwrite('{extract_dict["T2"]}/3_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["cyanc"]==True:
+                            build_name+="1-"
+                            # cv2.imwrite(f'{extract_dict["T2"]}/1_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["greenc"]==True:
+                            build_name+="2-"
+                            # cv2.imwrite(f'{extract_dict["T2"]}/2_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["bluec"]==True:
+                            build_name+="3-"
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["yellow"]==True:
+                            build_name+="4-"
+                            # cv2.imwrite('{extract_dict["T2"]}/3_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["magnetac"]==True:
+                            build_name+="5-"
+                            # cv2.imwrite(f'{extract_dict["T2"]}/1_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["blackc"]==True:
+                            build_name+="6-"
+                            # cv2.imwrite(f'{extract_dict["T2"]}/2_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["whitec"]==True:
+                            build_name+="7-"
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["greyc"]==True:
+                            build_name+="8-"
+                            # cv2.imwrite(f'{extract_dict["T2"]}/2_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["brownc"]==True:
+                            build_name+="9-" '''
 
-                if not build_name:
-                    build_name = "9-" 
-                
-                if build_name.endswith('-'):
-                    build_name = build_name[:-1]
+                    elif(k=="T4" and extract_dict[k]== True):
+                        build_name+= str(bbjson[key][bbid]["bb_ids"][0]["attb"]['highlight_hisam'])+"-"
+                        '''if bbjson[key][bbid]["bb_ids"][0]["attb"]["redh"]==True:
+                            build_name+="0-"
+                            # cv2.imwrite('{extract_dict["T2"]}/3_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["cyanh"]==True:
+                            build_name+="1-"
+                            # cv2.imwrite(f'{extract_dict["T2"]}/1_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["greenh"]==True:
+                            build_name+="2-"
+                            # cv2.imwrite(f'{extract_dict["T2"]}/2_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["blueh"]==True:
+                            build_name+="3-"
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["yellowh"]==True:
+                            build_name+="4-"
+                            # cv2.imwrite('{extract_dict["T2"]}/3_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["magnetah"]==True:
+                            build_name+="5-"
+                            # cv2.imwrite(f'{extract_dict["T2"]}/1_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["blackh"]==True:
+                            build_name+="6-"
+                            # cv2.imwrite(f'{extract_dict["T2"]}/2_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["whiteh"]==True:
+                            build_name+="7-"
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["greyh"]==True:
+                            build_name+="8-"
+                            # cv2.imwrite(f'{extract_dict["T2"]}/2_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
+                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["brownh"]==True:
+                            build_name+="9-" '''     
 
-                output_file_name = f'{build_name}_{image_file_name_only}_{bbid}_CW_{cwid}_{ind}.png'
-                output_full_path = os.path.join(params["path"], output_file_name)
-                
-                cv2.imwrite(output_full_path, crop)
-        
+                    else:
+                        continue
+                    # print(build_name)
+                #assert len(build_name)==4
+                num_writes+=1
+                cv2.imwrite(f'{params["path"]}/{build_name[:-1]}_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
         prev_id=cwid
-        print(f"Num crops saved for CW {cwid}: {num_crops_in_a_window_actual}. Errors in CW: {error_count}")
+        #print(error)
+        assert error<=1
+        assert num_crops_in_a_window==125
+        
+        print("Num writes",num_writes)
+        # return -1
         
     context_window_offset+=len(cw_json[key])
     

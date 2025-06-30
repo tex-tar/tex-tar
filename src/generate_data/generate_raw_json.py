@@ -10,18 +10,18 @@ from doctr.io import DocumentFile
 from doctr.models import ocr_predictor
 
 class DoctrProcessor:
-    def __init__(self,image_paths: List[str],output_json_dir: str, load_fine_tune_model: bool = False,pretrained_model_path: str = None,batch_size: int = 64,device: str = 'cuda:0'):
+    def __init__(self,image_paths: List[str],output_json: str, load_fine_tune_model: bool = False,pretrained_model_path: str = None,batch_size: int = 64,device: str = 'cuda:0'):
         """
         Args:
             image_paths: List of image file paths.
-            output_json_dir: Directory where JSON outputs will be saved.
+            output_json: Directory where JSON outputs will be saved.
             load_fine_tune_model: Whether to load fine-tuned weights.
             pretrained_model_path: Path to the fine-tuned model state dict.
             batch_size: Number of images per batch.
             device: Torch device string.
         """
         self.image_paths = image_paths
-        self.output_json_dir = output_json_dir
+        self.output_json = output_json
         self.load_fine_tune_model = load_fine_tune_model
         self.pretrained_model_path = pretrained_model_path
         self.batch_size = batch_size
@@ -36,7 +36,7 @@ class DoctrProcessor:
         for img_path in self.image_paths:
             if not os.path.isfile(img_path):
                 print(f"Warning: Image file not found: {img_path}. It will be skipped.", file=sys.stderr)
-        os.makedirs(self.output_json_dir, exist_ok=True)
+        
 
     def _load_fine_tuned_model(self):
        
@@ -83,6 +83,13 @@ class DoctrProcessor:
                 y0i = int(round(y0 * h))
                 x1i = int(round(x1 * w))
                 y1i = int(round(y1 * h))
+                x0_rel, y0_rel = word['geometry'][0]
+                x1_rel, y1_rel = word['geometry'][1]
+                x0i = int(round(x0_rel * w))
+                y0i = int(round(y0_rel * h))
+                x1i = int(round(x1_rel * w))
+                y1i = int(round(y1_rel * h))
+        
                 page_coords.append([x0i, y0i, x1i, y1i])
                 page_texts.append(word['value'])
             abs_coords.append(page_coords)
@@ -98,6 +105,7 @@ class DoctrProcessor:
         batches = (total + self.batch_size - 1) // self.batch_size
         bbox_counter = 0
         processed = 0
+        all_results = {}
 
         print(f"Starting OCR on {total} images in {batches} batch(es).")
 
@@ -114,8 +122,8 @@ class DoctrProcessor:
             try:
                 texts, preds = self._get_doctr_predictions_for_image(valid)
                 for idx, img in enumerate(valid):
-                    fname = os.path.splitext(os.path.basename(img))[0]
-                    out_file = os.path.join(self.output_json_dir, f"{fname}.json")
+                    fname = os.path.basename(img)
+                    
                     entries = []
                     for i, box in enumerate(preds[idx]):
                         x0, y0, x1, y1 = box
@@ -132,34 +140,38 @@ class DoctrProcessor:
                                 }]
                             })
                             bbox_counter += 1
-                    with open(out_file, 'w') as f:
-                        json.dump({fname: entries}, f, indent=2)
-                    print(f"  Saved: {out_file}")
+                    all_results[fname] = entries
+
+                    # with open(out_file, 'w') as f:
+                    #     json.dump({fname: entries}, f, indent=2)
+                    #print(f"  Saved: {out_file}")
                     processed += 1
             except Exception as e:
                 print(f"  Error processing batch {bi}: {e}", file=sys.stderr)
 
             print(f"Batch time: {time.time() - start_time:.2f}s")
-
+        with open(self.output_json, 'w') as out_f:
+          json.dump(all_results, out_f, indent=2)
         print(f"Finished: {processed}/{total} images processed.")
 
 
 def main():
-    config_path = "config.yaml"
+    config_path = "config/data_config.yaml"
     with open(config_path, 'r') as f:
         cfg = yaml.safe_load(f)
-    img_dir = cfg.get('image_folder')
+    img_dir = cfg['generate_json']['image_folder']
+    #import IPython;IPython.embed()
     if not img_dir or not os.path.isdir(img_dir):
         raise ValueError(f"Invalid image_folder: {img_dir}")
     exts = cfg.get('extensions', ['.png', '.jpg', '.jpeg', '.tiff', '.bmp'])
     images = [os.path.join(img_dir, f) for f in sorted(os.listdir(img_dir))
               if os.path.splitext(f)[1].lower() in exts]
-    output_json_dir=cfg['output_json_dir']
-    load_fine_tune_model=cfg.get('load_fine_tune_model', False)
-    pretrained_model_path=cfg.get('pretrained_model_path')
-    batch_size=cfg.get('batch_size', 64)
-    device=cfg.get('device', 'cuda:0')
-    processor = DoctrProcessor(images,output_json_dir,load_fine_tune_model,pretrained_model_path,batch_size,device)
+    output_json=cfg["generate_json"]['output_json']
+    load_fine_tune_model=cfg["generate_json"]['load_fine_tune_model']
+    pretrained_model_path=cfg["generate_json"]['pretrained_model_path']
+    batch_size=cfg.get('generate_json', {}).get('batch_size', 64)
+    device=cfg.get('generate_json', {}).get('device', 'cuda:0')
+    processor = DoctrProcessor(images,output_json,load_fine_tune_model,pretrained_model_path,batch_size,device)
     processor.process_images()
 
 

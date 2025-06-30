@@ -1,0 +1,9 @@
+pyyaml
+pandas
+tqdm
+numpy
+Pillow
+python-doctr
+torchvision
+torchaudio
+ipython

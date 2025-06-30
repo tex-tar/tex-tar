@@ -1,8 +1,8 @@
 generate_json:
-  image_folder: "/path/to/your/images"
-  output_json_dir: "/path/to/save/json"
+  image_folder: "/data/textar_inputs"
+  output_json: "/data/textar_outputs/jsons/generate_bbox.json"
   load_fine_tune_model: false
-  pretrained_model_path: "/path/to/fine_tuned_model.pt"
+  pretrained_model_path: None
   batch_size: 64
   device: "cuda:0"
   extensions:
@@ -12,10 +12,10 @@ generate_json:
     - ".tiff"
     - ".bmp"
 
-context_window:
-  bbjson: "/path/to/bboxes.json"
-  image_folder: "/path/to/your/images"
-  output_file_path: "/path/to/output/crops.json"
+context_crop:
+  bbjson: "/data/textar_outputs/jsons/generate_bbox.json"
+  image_folder: "/data/textar_inputs"
+  output_file_path: "/data/textar_outputs/jsons/crops.json"
   enable_random: 0
   seq_size: 125
   type: "word"
@@ -23,12 +23,10 @@ context_window:
   aspect_ratio: 1.3334
 
 extract_cw:
-  image_folder: "/path/to/your/images"
-  bbox_json_paths:
-    - "/path/to/bboxes_part1.json"
-    - "/path/to/bboxes_part2.json"
-  cw_json_path: "/path/to/context_windows.json"
-  output_word_crops_path: "/path/to/output/crops/"
+  image_folder: "/data/textar_inputs"
+  bbox_json_path: "/data/textar_outputs/jsons/generate_bbox.json"
+  cw_json_path: "/data/textar_outputs/jsons/crops.json"
+  output_word_crops_path: "/data/textar_outputs/word_only"
   pad_cropped_frame: "y"
   context_window_type: "word CW"
   sequence_size: 100
@@ -39,5 +37,5 @@ extract_cw:
     T2: true
   
 image_organization:
-  source_folder: "/ssd_scratch/rohan/swaroopajinka/T2_data/word_ONLY/test_augmented_2"
-  dest_folder: "/ssd_scratch/rohan/swaroopajinka/T2_data/word_CW/test_augmented_2"
+  source_folder: "/data/textar_outputs/word_only/"
+  dest_folder: "/data/textar_outputs/word_cw/"
