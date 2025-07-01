@@ -7,3 +7,6 @@ python-doctr
 torchvision
 torchaudio
 ipython
+wandb
+transformers
+timm

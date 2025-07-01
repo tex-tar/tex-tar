@@ -6,10 +6,11 @@ from utils.run_utils import (
     set_seed, load_json, load_module,
     load_checkpoint, calculate_weighted_average
 )
-from training.train import Trainer
-
+from src.utils.helper import initialize_optimizer
+from src.training.train import Trainer
+from src.validation.val import Validator
 class Pipeline:
-    def __init__(self, cfg_path='config.json'):
+    def __init__(self, cfg_path='config/train_config.yaml'):
         set_seed(21)
         self.cfg = load_json(cfg_path)
         os.environ['WANDB_DIR'] = self.cfg.get('wandb_dir', os.getenv('WANDB_DIR',''))
@@ -30,12 +31,14 @@ class Pipeline:
             self.model = mmod.model
 
         opt_cfg = self.cfg['optimizer']
-        Optim   = getattr(torch.optim, opt_cfg['type'])
-        self.optimizer = Optim(self.model.parameters(),lr=self.cfg['lr'],**opt_cfg.get('params',{}))
-
-        Trainer   = load_module('train_added','files').Trainer
-        Validator = load_module('val_added','files').Validator
-        Visualize = load_module('test','files').visualize_results
+        print("#########",opt_cfg)
+        #Optim   = getattr(torch.optim, opt_cfg['type'])
+       # self.optimizer = Optim(self.model.parameters(),lr=self.cfg['lr'],**opt_cfg.get('params',{}))
+        self.optimizer = initialize_optimizer(
+            self.cfg["optimizer"],learning_rate=self.cfg['lr'],parameters = self.model.parameters())
+        #Trainer   = load_module('train_added','files').Trainer
+        #Validator = load_module('val_added','files').Validator
+        #Visualize = load_module('test','files').visualize_results
         common = {
             'model':   self.model,
             'optimizer': self.optimizer,
@@ -50,7 +53,7 @@ class Pipeline:
             'total_categories': self.cfg['output_categories'],
         }
 
-        
+        self.trainer = Trainer(self.cfg)
         self.trainer = Trainer(
             **common,
             datasets=self.cfg['datasets']['train'],
@@ -92,28 +95,28 @@ class Pipeline:
        
             for e in range(start_ep, self.cfg['epochs']):
                 _, train_loss = self.trainer.run_epoch(e)
-                val_loss, t1_f1, t2_f1 = self.validator.eval(e, self.model, bbox_info=None)
-                w1, w2 = calculate_weighted_average(t1_f1, t2_f1)
-                avg_f1 = (w1 + w2)/2
+                #val_loss, t1_f1, t2_f1 = self.validator.eval(e, self.model, bbox_info=None)
+                # w1, w2 = calculate_weighted_average(t1_f1, t2_f1)
+                # avg_f1 = (w1 + w2)/2
 
                 
-                if w1 > best['t1']:
-                    best['t1'], _ = w1, self.trainer.save_model(e, train_loss, val_loss, 'best_t1_f1')
-                if w2 > best['t2']:
-                    best['t2'], _ = w2, self.trainer.save_model(e, train_loss, val_loss, 'best_t2_f1')
-                if avg_f1 > best['avg']:
-                    best['avg'], _ = avg_f1, self.trainer.save_model(e, train_loss, val_loss, 'best_avg_f1')
-                if val_loss < best['val']:
-                    best['val'], _ = val_loss, self.trainer.save_model(e, train_loss, val_loss, 'best_val')
-                self.trainer.save_model(e, train_loss, val_loss, 'last')
+                # if w1 > best['t1']:
+                #     best['t1'], _ = w1, self.trainer.save_model(e, train_loss, val_loss, 'best_t1_f1')
+                # if w2 > best['t2']:
+                #     best['t2'], _ = w2, self.trainer.save_model(e, train_loss, val_loss, 'best_t2_f1')
+                # if avg_f1 > best['avg']:
+                #     best['avg'], _ = avg_f1, self.trainer.save_model(e, train_loss, val_loss, 'best_avg_f1')
+                # if val_loss < best['val']:
+                #     best['val'], _ = val_loss, self.trainer.save_model(e, train_loss, val_loss, 'best_val')
+                # self.trainer.save_model(e, train_loss, val_loss, 'last')
 
-                if self.cfg['isWandb']:
-                    wandb.log({'train_loss': train_loss,'val_loss': val_loss,'t1_f1': w1,'t2_f1': w2,'avg_f1': avg_f1})
+                # if self.cfg['isWandb']:
+                #     wandb.log({'train_loss': train_loss,'val_loss': val_loss,'t1_f1': w1,'t2_f1': w2,'avg_f1': avg_f1})
                                    
-        else:
+        # else:
             
-            Visualize = self.visualize
-            Visualize(self.model, self.cfg)
+        #     Visualize = self.visualize
+        #     Visualize(self.model, self.cfg)
 
 if __name__=="__main__":
     Pipeline().run()

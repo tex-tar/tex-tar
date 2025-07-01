@@ -1,145 +1,178 @@
+# train.py
+
 import os
-import time
 import yaml
 import torch
+import importlib
 import wandb
-
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
-from utils.dataloader.transform import loader_transform_train
-from utils.dataloader.samplers import make_sampler
-from utils.dataloader.dataloader import *
-from utils.helper import load_module, repeat_dataloader
-from utils.files.pretrained_helper import load_pretrained
+# your project–specific imports
+from src.dataloader.transform import loader_transform_train
+from src.dataloader.samplers import make_sampler
+from src.dataloader.dataloader import *
+from src.utils.helper import repeat_dataloader
 
 class Trainer:
     def __init__(self, cfg: dict):
-        # Model and optimization
+        self.cfg = cfg
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.model = self._build_model(cfg['model']).to(self.device)
-        self.optimizer = self._build_optimizer(cfg['optimizer'], self.model)
-        self.scheduler = self._build_scheduler(cfg.get('scheduler'), self.optimizer)
 
-        # Loss
-        loss_mod = load_module(cfg['loss_function_module'], 'loss_functions')
+
+        self.sequence_size = cfg['sequence_size'][0] if isinstance(cfg['sequence_size'], (list,tuple)) else cfg['sequence_size']
+        self.model = self._build_model(cfg['model']).to(self.device)
+
+        self.optimizer = torch.optim.Adam(
+            self.model.parameters(),
+            lr=cfg['lr']
+        )
+
+
+        sched_cfg = cfg.get('scheduler')
+        if sched_cfg and sched_cfg.get('type') == 'ReduceLROnPlateau':
+            self.scheduler = ReduceLROnPlateau(
+                self.optimizer,
+                **sched_cfg.get('params', {})
+            )
+        else:
+            self.scheduler = None
+
+        # ---- 4) loss fn ----
+        loss_mod = importlib.import_module(f"utils.loss_functions.{cfg['loss_fn']['train']}")
         self.calculate_loss = loss_mod.calculate_loss
-        self.loss_types = cfg['loss_types']
+        self.loss_types   = cfg['loss_type']['train']
         self.loss_weights = cfg['loss_weights']
 
-        # Data loaders
-        self.init_dataloaders = self._init_dataloaders(cfg['data'])
-        self.accumulation_steps = cfg['training']['accumulation_steps']
+        # ---- 5) data loaders ----
+        self.train_loader, self.val_loader = self._init_dataloaders(cfg)
 
-        # Checkpoint and logging
-        self.checkpoint_dir = cfg['training']['checkpoint_dir']
+        # ---- 6) misc ----
+        self.accumulation_steps = cfg['accumulated_batch_descent']
+        self.checkpoint_dir     = cfg['checkpoint_dir']
         os.makedirs(self.checkpoint_dir, exist_ok=True)
 
-        if cfg['training'].get('use_wandb'):
+        if cfg.get('use_wandb'):
             wandb.init(
-                project=cfg['training']['wandb_project'],
-                name=cfg['training']['run_name'],
+                project=cfg['wandb_project_name'],
+                name=cfg['run_name'],
                 config=cfg
             )
 
-    def _build_model(self, model_cfg: dict) -> torch.nn.Module:
-        # instantiate your model here, e.g. vision+transformer
-        ModelClass = load_module(model_cfg['module'], model_cfg['class'])
-        model = ModelClass(**model_cfg.get('params', {}))
-        if model_cfg.get('pretrained_path'):
-            load_pretrained(model, model_cfg['pretrained_path'], model_cfg.get('load_fn'))
-        return model
+    def _build_model(self, model_name: str) -> torch.nn.Module:
+        """
+        Given a string like "consent_rope_selective", import
+        utils.architectures.consent_rope_selective and call its
+        `model(...)` factory.
+        """
+        mod = importlib.import_module(f"utils.architectures.{model_name}")
+        if hasattr(mod, 'model'):
+            try:
+                return mod.model(sequence_size=self.sequence_size)
+            except TypeError:
+                return mod.model()
+        raise RuntimeError(f"architecture module {model_name} has no `model(...)`")
 
-    def _build_optimizer(self, optim_cfg: dict, model: torch.nn.Module):
-        OptimClass = getattr(torch.optim, optim_cfg['type'])
-        return OptimClass(model.parameters(), **optim_cfg['params'])
-
-    def _build_scheduler(self, sched_cfg: dict, optimizer):
-        if not sched_cfg:
-            return None
-        if sched_cfg['type'] == 'ReduceLROnPlateau':
-            return ReduceLROnPlateau(optimizer, **sched_cfg.get('params', {}))
-        # add more schedulers as needed
-        return None
-
-    def _init_dataloaders(self, data_cfg: dict):
-        dataloaders = []
-        lengths = []
-        for ds_cfg, sampler_cfg in zip(data_cfg['datasets'], data_cfg['samplers']):
-            DatasetClass = load_module(ds_cfg['module'], ds_cfg['class'])
-            dataset = DatasetClass(
+    def _init_dataloaders(self, cfg):
+        """
+        Builds a zipped list of DataLoaders, one per dataset in cfg['datasets'].
+        """
+        loaders, lengths = [], []
+        for ds_cfg, sam_cfg in zip(cfg['datasets'], cfg['samplers']):
+            # dynamically load the Dataset class
+            DS = getattr(importlib.import_module("src.dataloader.dataloader"), ds_cfg['class'])
+            ds = DS(
                 img_dir=ds_cfg['img_dir'],
                 order_list=ds_cfg['order_list'],
                 label_split=ds_cfg['label_split'],
                 total_categories=ds_cfg['total_categories'],
                 transform=loader_transform_train
             )
-            if sampler_cfg['use']:
+
+            if sam_cfg.get('use'):
                 sampler = make_sampler(
-                    sampler_cfg['order_list'],
-                    sampler_cfg['fraction'],
-                    sampler_cfg['class_weights'],
+                    sam_cfg['order_list'],
+                    sam_cfg['fraction'],
+                    sam_cfg['class_weights'],
                     ds_cfg['total_categories']
                 )
             else:
                 sampler = None
 
             loader = DataLoader(
-                dataset,
+                ds,
                 batch_size=ds_cfg['batch_size'],
                 shuffle=(sampler is None and ds_cfg['shuffle']),
                 sampler=sampler,
-                num_workers=data_cfg['num_workers'],
-                pin_memory=True,
-                worker_init_fn=seed_worker
+                num_workers=cfg['num_workers'],
+                pin_memory=True
             )
-            dataloaders.append(loader)
+            loaders.append(loader)
             lengths.append(len(loader))
 
-        # repeat shorter loaders to match longest
+        # equalize lengths by repeating shorter loaders
         max_len = max(lengths)
-        final_loaders = []
-        for loader, length in zip(dataloaders, lengths):
+        final = []
+        for L, length in zip(loaders, lengths):
             if length < max_len:
-                final_loaders.append(repeat_dataloader(loader, max_len))
+                final.append(repeat_dataloader(L, max_len))
             else:
-                final_loaders.append(loader)
-        return list(zip(*final_loaders))  # for synchronized iteration
+                final.append(L)
 
-   
+        # zip them for synchronized iteration
+        return list(zip(*final))
 
-    def _run_train(self, epoch):
+    def train(self, epochs: int):
+        for epoch in range(1, epochs+1):
+            train_loss = self._run_epoch(epoch)
+            if self.scheduler:
+                self.scheduler.step(train_loss)
+            # you could call a validation pass here, save checkpoints, etc.
+
+    def _run_epoch(self, epoch: int) -> float:
         self.model.train()
         self.optimizer.zero_grad()
-        total_loss, count = 0.0, 0
-        for batch in self.init_dataloaders:
-            inputs, labels, supp = self._unpack_batch(batch)
-            outputs = self.model(inputs, supp)
+        total_loss = 0.0
+        batch_count = 0
+
+        for batch in self.train_loader:
+            # each batch is a tuple of sub-batches, one per loader
+            # here we assume 3-tuple: (images, labels, supp)
+            # adjust this unpacking to your datasets
+            images, labels, supp = batch  
+            images = images.to(self.device)
+            labels = labels.to(self.device)
+            supp   = supp.to(self.device)
+
+            outputs = self.model(images, supp)
             loss = self.calculate_loss(
-                outputs, labels, self.loss_types, self.loss_weights,
-                sum(ds['total_categories'] for ds in self.init_dataloaders[0]),
-                self.init_dataloaders[0][0].dataset.sequence_size,
-                ds['label_split'], [len(inputs)]
+                outputs,
+                labels,
+                self.loss_types,
+                self.loss_weights
             ) / self.accumulation_steps
+
             loss.backward()
             total_loss += loss.item()
-            count += 1
-            if count % self.accumulation_steps == 0:
+            batch_count += 1
+
+            if batch_count % self.accumulation_steps == 0:
                 self.optimizer.step()
                 self.optimizer.zero_grad()
-        avg_loss = total_loss / count
-        print(f"Epoch {epoch} train loss: {avg_loss:.4f}")
-        return avg_loss
+
+        avg = total_loss / batch_count
+        print(f"[Epoch {epoch}] train loss = {avg:.4f}")
+        return avg
 
 
 def main():
-    path = "config.yaml"
-    with open(path, 'r') as f:
-        cfg_data = yaml.safe_load(f)
-    cfg = cfg_data['trainer']
+    # assume your config lives in `config.yaml`
+    with open("config/config.yaml") as f:
+        cfg = yaml.safe_load(f)
+
     trainer = Trainer(cfg)
-    trainer.train(cfg['training']['epochs'])
+    trainer.train(cfg['epochs'])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

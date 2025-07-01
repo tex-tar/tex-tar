@@ -1,0 +1,61 @@
+output_categories:
+  - 4
+  - 4
+sequence_size:
+  - 125
+optimizer: adam
+lr: 0.0001
+purpose: train
+model: consent_rope_selective
+loss_fn:
+  train: t2_loss
+  val:
+    - t2_loss
+label_split:
+  - [4, 4]
+loss_weights:
+  - 0.25
+  - 0.75
+loss_type:
+  train:
+    - ce
+    - ce
+  val:
+    - ce
+    - ce
+use_external_sampler:
+  - false
+sampler_dataset_fraction:
+  - 1
+sampler_class_weights:
+  - []
+datasets:
+  train:
+    - /data/textar_outputs/word_cw
+  val:
+    - /data/textar_outputs/word_cw
+batch_size: 1600
+pretrained: "False"
+load_pretrained_function: "False"
+batch_split:
+  - 1600
+accumulated_batch_descent: 2
+order:
+  train:
+    - error
+  val:
+    - error
+dataloaders:
+  train:
+    - DocLevelDataset_RoPE_Train
+  val:
+    - DocLevelDataset_RoPE_Val_name
+num_workers: 8
+isWandb: true
+run_name: consent_rebuttal-augmentation_NO-phase2-note-phase2isunweighted
+shuffle:
+  - true
+wandb_project_name: T1-9Aug
+epochs: 100
+viz_labels: []
+'multi-gpu': false
