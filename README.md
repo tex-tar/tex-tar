@@ -17,12 +17,11 @@
 ## Table of Contents
 
 1. [Getting Started](#getting-started)  
-2. [Project Overview](#project-overview)  
-3. [Training](#training)  
-4. [Evaluation & Inference](#evaluation--inference)  
-5. [Fine-Tuning](#fine-tuning)  
-6. [Citation](#citation)  
-7. [Contact](#contact)  
+2. [Project Overview](#project-overview)   
+3. [Evaluation & Inference](#evaluation--inference)  
+4. [Fine-Tuning](#fine-tuning)  
+5. [Citation](#citation)  
+6. [Contact](#contact)  
 
 ---
 
