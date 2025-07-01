@@ -115,6 +115,7 @@ We employ a **two-stage** training scheme:
 # Outputs
 After running the full dataset pipeline. you should see something like 
 /data/textar_outputs/
+```bash
 ├── jsons/
 │   ├── generate_bbox.json      ← word-bbox outputs
 │   └── crops.json              ← context-window definitions
@@ -132,7 +133,7 @@ After running the full dataset pipeline. you should see something like
 └── 4/
 ├── 0-0_001.png_0_CW_4_0.png
 └── …
-
+```
 # Evaluation & Inference
 
 - **Metric:** We use the F1-score to balance precision and recall, making it robust to the natural class imbalance in attributes like bold, italic, underline, and strikeout.  
