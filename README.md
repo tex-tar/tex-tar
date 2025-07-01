@@ -133,6 +133,54 @@ After running the full dataset pipeline. you should see something like
 └── 4/
 ├── 0-0_001.png_0_CW_4_0.png
 └── …
+
+```
+After inference , the output will be a json file where it contains all the predictions of the words which are in the image . So you should see something like 
+```bash
+{
+  "001.png": [
+    {
+      "bb_dim": [169, 83, 198, 99],
+      "bb_ids": [
+        {
+          "id": 0,
+          "ocrv": "FIG.",
+          "attb": {
+            "no_bi": false,
+            "bold": false,
+            "italic": true,
+            "b+i": false,
+            "no_us": true,
+            "underlined": false,
+            "strikeout": true,
+            "u+s": false
+          }
+        }
+      ]
+    },
+    {
+      "bb_dim": [198, 84, 216, 98],
+      "bb_ids": [
+        {
+          "id": 1,
+          "ocrv": "34",
+          "attb": {
+            "no_bi": true,
+            "bold": false,
+            "italic": false,
+            "b+i": false,
+            "no_us": false,
+            "underlined": true,
+            "strikeout": false,
+            "u+s": false
+          }
+        }
+      ]
+    }
+    // … more word entries …
+  ]
+}
+
 ```
 # Evaluation & Inference
 
