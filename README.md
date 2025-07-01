@@ -32,9 +32,14 @@ To make the code run, install the necessary libraries
 python3 -m venv .textar
 pip install -r requirements.txt
 
-To generate context windows, run src/generate_data/data_pipeline.py
-To train a model, run src/main.py
-To inference a model, run src/inference/infer.py
+To generate context windows, run 
+src/generate_data/data_pipeline.py
+
+To train a model,run
+src/main.py
+
+To inference a model, run
+src/inference/infer.py
 ```
 
 # Project Overview
