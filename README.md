@@ -17,9 +17,9 @@
 ## Table of Contents
 
 1. [Getting Started](#getting-started)  
-2. [Project Overview](#project-overview)   
-3. [Evaluation & Inference](#evaluation--inference)  
-4. [Fine-Tuning](#fine-tuning)  
+2. [Project & Model Overview](#project&Model-overview)   
+3. [Outputs](#Outputs)  
+4. [Evaluation & Inference](#evaluation--inference)  
 5. [Citation](#citation)  
 6. [Contact](#contact)  
 
@@ -112,6 +112,27 @@ We employ a **two-stage** training scheme:
 | image_organization.dest_folder        | Destination of the final context windows.                                                           | *WORD_CW_DIR 
 
      
+# Outputs
+After running the full dataset pipeline. you should see something like 
+/data/textar_outputs/
+├── jsons/
+│   ├── generate_bbox.json      ← word-bbox outputs
+│   └── crops.json              ← context-window definitions
+├── word_only/                  ← raw word-context patches
+│   ├── 0-0_001.png_0_CW_4_0.png
+│   ├── 0-0_001.png_1_CW_4_0.png
+│   └── …
+└── word_cw/                    ← patches grouped by context-window ID
+├── 0/
+│   ├── 0-0_001.png_0_CW_0_0.png
+│   └── …
+├── 1/
+│   ├── 0-0_001.png_2_CW_1_0.png
+│   └── …
+└── 4/
+├── 0-0_001.png_0_CW_4_0.png
+└── …
+
 # Evaluation & Inference
 
 - **Metric:** We use the F1-score to balance precision and recall, making it robust to the natural class imbalance in attributes like bold, italic, underline, and strikeout.  
