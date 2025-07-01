@@ -83,9 +83,9 @@ We employ a **two-stage** training scheme:
 - **Data Creation Pipeline**: edit `config/data_config.yaml` to adjust paths, sequence size, random crop settings, etc for extracting data to give the input to the model 
 - **Model Training**: edit `config/train_config.yaml` (or `config/config.yaml`) to set learning rate, batch size, model name, datasets, optimizer, and other hyperparameters for training the model.
 
-| Parameter           | Description          | Default Value                                           |
+| Parameter                                     | Description          | Default Value                                           |
 |---------------------------------------|------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------|
-| input_images                          | Path to the folder containing source document images.                                                                        | /data/textar_inputs                                     |
+| input_images                                           | Path to the folder containing source document images.                                                                        | /data/textar_inputs                                     |
 | bbox_json                             | Output JSON from bounding‐box generation (maps each image to its word‐level bboxes).                                         | /data/textar_outputs/jsons/generate_bbox.json           |
 | crops_json                            | Output JSON from context‐window cropping (maps each image to its context windows).                                            | /data/textar_outputs/jsons/crops.json                   |
 | word_only                             | Directory where per‐word crops (after extract_cw) are saved.                                                                  | /data/textar_outputs/word_only                          |
