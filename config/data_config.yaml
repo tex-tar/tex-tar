@@ -1,10 +1,17 @@
+# config/data_config.yaml
+input_images: &INPUT_IMAGES     "/data/textar_inputs"
+bbox_json:    &BBOX_JSON        "/data/textar_outputs/jsons/generate_bbox.json"
+crops_json:   &CROPS_JSON       "/data/textar_outputs/jsons/crops.json"
+word_only:    &WORD_ONLY_DIR    "/data/textar_outputs/word_only"
+word_cw:      &WORD_CW_DIR      "/data/textar_outputs/word_cw"
+
 generate_json:
-  image_folder: "/data/textar_inputs"
-  output_json: "/data/textar_outputs/jsons/generate_bbox.json"
+  image_folder:        *INPUT_IMAGES
+  output_json:         *BBOX_JSON
   load_fine_tune_model: false
-  pretrained_model_path: None
-  batch_size: 64
-  device: "cuda:0"
+  pretrained_model_path: null
+  batch_size:          64
+  device:              "cuda:0"
   extensions:
     - ".png"
     - ".jpg"
@@ -13,29 +20,29 @@ generate_json:
     - ".bmp"
 
 context_crop:
-  bbjson: "/data/textar_outputs/jsons/generate_bbox.json"
-  image_folder: "/data/textar_inputs"
-  output_file_path: "/data/textar_outputs/jsons/crops.json"
-  enable_random: 0
-  seq_size: 125
-  type: "word"
-  pad: "y"
-  aspect_ratio: 1.3334
+  image_folder:        *INPUT_IMAGES
+  bbjson:              *BBOX_JSON
+  output_file_path:    *CROPS_JSON
+  enable_random:       0
+  seq_size:            125
+  type:                "word"
+  pad:                 "y"
+  aspect_ratio:        1.3334
 
 extract_cw:
-  image_folder: "/data/textar_inputs"
-  bbox_json_path: "/data/textar_outputs/jsons/generate_bbox.json"
-  cw_json_path: "/data/textar_outputs/jsons/crops.json"
-  output_word_crops_path: "/data/textar_outputs/word_only"
-  pad_cropped_frame: "y"
-  context_window_type: "word CW"
-  sequence_size: 100
-  aspect_ratio: 1.3334
+  image_folder:           *INPUT_IMAGES
+  bbox_json_path:         *BBOX_JSON
+  cw_json_path:           *CROPS_JSON
+  output_word_crops_path: *WORD_ONLY_DIR
+  pad_cropped_frame:      "y"
+  context_window_type:    "word CW"
+  sequence_size:          100
+  aspect_ratio:           1.3334
   word_bbox_padding_offset: 0.1
   extract_attributes:
     T1: true
     T2: true
-  
+
 image_organization:
-  source_folder: "/data/textar_outputs/word_only/"
-  dest_folder: "/data/textar_outputs/word_cw/"
+  source_folder: *WORD_ONLY_DIR
+  dest_folder:   *WORD_CW_DIR
