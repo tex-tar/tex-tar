@@ -9,12 +9,7 @@ from src.utils.data_utils import extract_cw
 
 class ContextCWExtractor:
     
-    def __init__(self, config_path: str):
-
-        if not os.path.isfile(config_path):
-            raise FileNotFoundError(f"Config not found: {config_path}")
-        with open(config_path, 'r') as f:
-            cfg = yaml.safe_load(f)
+    def __init__(self, cfg):
 
         ec = cfg.get('extract_cw', {})
         

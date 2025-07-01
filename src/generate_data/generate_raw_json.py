@@ -10,7 +10,7 @@ from doctr.io import DocumentFile
 from doctr.models import ocr_predictor
 
 class DoctrProcessor:
-    def __init__(self,image_paths: List[str],output_json: str, load_fine_tune_model: bool = False,pretrained_model_path: str = None,batch_size: int = 64,device: str = 'cuda:0'):
+    def __init__(self,cfg):
         """
         Args:
             image_paths: List of image file paths.
@@ -20,13 +20,20 @@ class DoctrProcessor:
             batch_size: Number of images per batch.
             device: Torch device string.
         """
-        self.image_paths = image_paths
-        self.output_json = output_json
-        self.load_fine_tune_model = load_fine_tune_model
-        self.pretrained_model_path = pretrained_model_path
-        self.batch_size = batch_size
+        img_dir = cfg['generate_json']['image_folder']
+        if not img_dir or not os.path.isdir(img_dir):
+            raise ValueError(f"Invalid image_folder: {img_dir}")
+        exts = cfg.get('extensions', ['.png', '.jpg', '.jpeg', '.tiff', '.bmp'])
+        self.image_paths = [os.path.join(img_dir, f) for f in sorted(os.listdir(img_dir))
+              if os.path.splitext(f)[1].lower() in exts]
+        self.output_json=cfg["generate_json"]['output_json']
+        self.load_fine_tune_model=cfg["generate_json"]['load_fine_tune_model']
+        self.pretrained_model_path=cfg["generate_json"]['pretrained_model_path']
+        self.batch_size=cfg.get('generate_json', {}).get('batch_size', 64)
+        self.device=cfg.get('generate_json', {}).get('device', 'cuda:0')
+
         os.environ['USE_TORCH'] = '1'
-        self.device = torch.device(device if torch.cuda.is_available() else 'cpu')
+        #self.device = torch.device(device if torch.cuda.is_available() else 'cpu')
         print(f"DoctrProcessor using device: {self.device}")
         self.predictor = ocr_predictor(det_arch='db_resnet50', pretrained=True).to(self.device)
         if self.load_fine_tune_model:
@@ -159,19 +166,8 @@ def main():
     config_path = "config/data_config.yaml"
     with open(config_path, 'r') as f:
         cfg = yaml.safe_load(f)
-    img_dir = cfg['generate_json']['image_folder']
-    #import IPython;IPython.embed()
-    if not img_dir or not os.path.isdir(img_dir):
-        raise ValueError(f"Invalid image_folder: {img_dir}")
-    exts = cfg.get('extensions', ['.png', '.jpg', '.jpeg', '.tiff', '.bmp'])
-    images = [os.path.join(img_dir, f) for f in sorted(os.listdir(img_dir))
-              if os.path.splitext(f)[1].lower() in exts]
-    output_json=cfg["generate_json"]['output_json']
-    load_fine_tune_model=cfg["generate_json"]['load_fine_tune_model']
-    pretrained_model_path=cfg["generate_json"]['pretrained_model_path']
-    batch_size=cfg.get('generate_json', {}).get('batch_size', 64)
-    device=cfg.get('generate_json', {}).get('device', 'cuda:0')
-    processor = DoctrProcessor(images,output_json,load_fine_tune_model,pretrained_model_path,batch_size,device)
+    
+    processor = DoctrProcessor(cfg)
     processor.process_images()
 
 

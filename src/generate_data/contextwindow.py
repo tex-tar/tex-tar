@@ -8,7 +8,7 @@ from typing import List, Dict, Any
 from src.utils.data_utils import crop_frame_around_points
 
 
-class ContextWindowExtractor:
+class ContextCropGenerator:
     """
     Generates context-window crops for images using the entire config dict.
     Expects the config dict to have a 'context_crop' section with:
@@ -98,7 +98,7 @@ def main():
     cfg_path = os.path.join('config', 'data_config.yaml')
     with open(cfg_path, 'r') as f:
         config = yaml.safe_load(f)
-    extractor = ContextWindowExtractor(config)
+    extractor = ContextCropGenerator(config)
     extractor.run()
 
 if __name__ == '__main__':
