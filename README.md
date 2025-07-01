@@ -201,6 +201,4 @@ Please use the following BibTeX entry for citation .
 # Contact
 For any queries, please contact [Dr. Ravi Kiran Sarvadevabhatla](mailto:ravi.kiran@iiit.ac.in.)
 
-# License
-This project is open sourced under [MIT License](LICENSE).
 

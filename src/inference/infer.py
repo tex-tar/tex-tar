@@ -1,3 +1,4 @@
+print("--- TEST_SCRIPT_ORIGINAL.PY IS BEING EXECUTED ---") 
 import torch
 from torchvision.transforms import ToTensor, Resize, Compose
 import numpy as np
@@ -8,7 +9,9 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from pathlib import Path 
 from dataset_util import WordData, cwData
-from src.models.consent_rope_selective import model
+
+from model_files.consent_rope_selective import model
+
 
 class InferenceProcessor:
     def __init__(self, config_obj):
@@ -26,12 +29,7 @@ class InferenceProcessor:
         self.t1_labels = {0: "no_bi", 1: "bold", 2: "italic", 3: "b+i"}
         self.t2_labels = {0: "no_us", 1: "underlined", 2: "strikeout", 3: "u+s"}
 
-        self.colors_map = {
-            "red": (255, 0, 0), "blue": (0, 0, 255), "green": (0, 128, 0),
-            "yellow": (255, 255, 0), "orange": (255, 165, 0), "gray": (128, 128, 128),
-            "purple": (128, 0, 128), "brown": (165, 42, 42), "cyan": (0, 255, 255),
-            "black": (0, 0, 0), "white": (255, 255, 255)
-        }
+        
 
 
     def _load_model_state(self):
@@ -74,7 +72,7 @@ class InferenceProcessor:
 
         global_stack_tensor_t1 = torch.tensor([])
         global_stack_tensor_t2 = torch.tensor([])
-        
+        global_stack_tensor_t3 = torch.tensor([])
         img_file_names_processed = [] 
 
         self.model.eval()
@@ -115,25 +113,26 @@ class InferenceProcessor:
 
                 global_stack_tensor_t1 = torch.cat([global_stack_tensor_t1, t1_out.cpu()])
                 global_stack_tensor_t2 = torch.cat([global_stack_tensor_t2, t2_out.cpu()])
-               
+                global_stack_tensor_t3 = torch.cat([global_stack_tensor_t3, t3_out.cpu()])
+
 
         print("Shape of global_stack_tensor_t1:", global_stack_tensor_t1.shape)
         print("Shape of global_stack_tensor_t2:", global_stack_tensor_t2.shape)
-       
+
         print("Number of processed image files:", len(img_file_names_processed))
 
         word_bb_map = self._process_predictions(img_file_names_processed, global_stack_tensor_t1,
-                                                global_stack_tensor_t2, test_type)
+                                                global_stack_tensor_t2, global_stack_tensor_t3, test_type)
 
         self._update_bbjson(word_bb_map)
 
-    def _process_predictions(self, img_file_names, t1_preds, t2_preds, test_type):
+    def _process_predictions(self, img_file_names, t1_preds, t2_preds, t3_preds, test_type):
         """Processes raw predictions and maps them to bounding box IDs."""
         word_bb_map = {}
         for idx, img_path_in_json in enumerate(img_file_names):
             prediction_t1 = t1_preds[idx]
             prediction_t2 = t2_preds[idx]
-            
+
 
             img_key_for_bbjson = None
             bbid = None
@@ -185,7 +184,7 @@ class InferenceProcessor:
                 word_bb_map[map_key] = {
                     "t1_prob": F.softmax(prediction_t1, dim=-1).cpu(),
                     "t2_prob": F.softmax(prediction_t2, dim=-1).cpu(),
-                  
+                   
                     "cnt": 1
                 }
             else:
@@ -195,16 +194,15 @@ class InferenceProcessor:
         return word_bb_map
 
 
-   
-
 
     def _update_bbjson(self, word_bb_map):
         """Updates the bounding box JSON with predicted attributes."""
-        
         bbjson_path_raw = self.config.get('model_inference_config.bbjson')
         output_bbjson_path_raw = self.config.get('model_inference_config.output_bbjson')
 
-    
+        print(f"DEBUG_CRITICAL: bbjson_path_raw: '{bbjson_path_raw}', Type: {type(bbjson_path_raw)}")
+        print(f"DEBUG_CRITICAL: output_bbjson_path_raw: '{output_bbjson_path_raw}', Type: {type(output_bbjson_path_raw)}")
+
         if isinstance(bbjson_path_raw, tuple):
             bbjson_path = bbjson_path_raw[0]
             print(f"DEBUG_CRITICAL: Corrected bbjson_path to: '{bbjson_path}' (was tuple)")
@@ -237,7 +235,6 @@ class InferenceProcessor:
                 initial_attb = {
                     'bold': False, 'italic': False, 'b+i': False, 'no_bi': False,
                     'no_us': False, 'underlined': False, 'strikeout': False, 'u+s': False,
-                   
                 }
                 bbox_info[img_name_key][j]["bb_ids"][0]["attb"].update(initial_attb)
 
@@ -253,13 +250,11 @@ class InferenceProcessor:
 
             pred_t1_prob = word_bb_map[map_key]["t1_prob"]
             pred_t2_prob = word_bb_map[map_key]["t2_prob"]
-          
             pred_count = word_bb_map[map_key]["cnt"]
 
             pred_t1 = torch.argmax(pred_t1_prob / pred_count)
             pred_t2 = torch.argmax(pred_t2_prob / pred_count)
-           
-
+       
             if img_name_for_bbjson in bbox_info and bb_id < len(bbox_info[img_name_for_bbjson]):
                 attb_dict = bbox_info[img_name_for_bbjson][bb_id]["bb_ids"][0]["attb"]
 
@@ -270,9 +265,6 @@ class InferenceProcessor:
 
                 attb_dict[self.t1_labels[pred_t1.item()]] = True
                 attb_dict[self.t2_labels[pred_t2.item()]] = True
-
-               
-               
                 
                 processed_bb_keys.add(map_key)
             else:
