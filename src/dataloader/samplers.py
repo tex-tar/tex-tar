@@ -4,6 +4,10 @@ import random
 import pandas as pd   
 import torch
 
+"""
+Can utilize this sampler for a balanced mini-batch training in case of imbalanced data.
+"""
+
 def make_weights(train_targets, prob_sample,num_classes):
     class_sample_counts = [train_targets.count(class_idx) for class_idx in range(num_classes)]
     weights = np.array(class_sample_counts, dtype=np.float32)
