@@ -4,10 +4,11 @@ import sys
 import json
 import yaml
 import torch
-from collections import OrderedDict
-from typing import List
-from doctr.io import DocumentFile
+os.environ['USE_TORCH'] = '1'
 from doctr.models import ocr_predictor
+from collections import OrderedDict
+from doctr.io import DocumentFile
+import json
 
 class DoctrProcessor:
     def __init__(self,cfg):
@@ -30,12 +31,11 @@ class DoctrProcessor:
         self.load_fine_tune_model=cfg["generate_json"]['load_fine_tune_model']
         self.pretrained_model_path=cfg["generate_json"]['pretrained_model_path']
         self.batch_size=cfg.get('generate_json', {}).get('batch_size', 64)
-        self.device=cfg.get('generate_json', {}).get('device', 'cuda:0')
+        self.device=cfg.get('generate_json', {}).get('device', 'cuda')
 
-        os.environ['USE_TORCH'] = '1'
-        #self.device = torch.device(device if torch.cuda.is_available() else 'cpu')
         print(f"DoctrProcessor using device: {self.device}")
-        self.predictor = ocr_predictor(det_arch='db_resnet50', pretrained=True).to(self.device)
+        self.predictor = ocr_predictor(det_arch="db_resnet50",pretrained=True).to(self.device)
+        print(self.load_fine_tune_model)
         if self.load_fine_tune_model:
             self._load_fine_tuned_model()
         if not isinstance(self.image_paths, list):
@@ -65,9 +65,8 @@ class DoctrProcessor:
             self.load_fine_tune_model = False
 
 
-    def _get_doctr_predictions_for_image(self, image_path: str):
-      
-        doc = DocumentFile.from_images(image_path)
+    def _get_doctr_predictions_for_image(self, image_paths):
+        doc = DocumentFile.from_images(image_paths)
         result = self.predictor(doc)
         export = result.export()
         dims = [p['dimensions'] for p in export['pages']]

@@ -1,17 +1,18 @@
 # config/data_config.yaml
-input_images: &INPUT_IMAGES     "/data/textar_inputs"
-bbox_json:    &BBOX_JSON        "/data/textar_outputs/jsons/generate_bbox.json"
-crops_json:   &CROPS_JSON       "/data/textar_outputs/jsons/crops.json"
-word_only:    &WORD_ONLY_DIR    "/data/textar_outputs/word_only"
-word_cw:      &WORD_CW_DIR      "/data/textar_outputs/word_cw"
+skip_bounding_box_detection: true
+
+input_images: &INPUT_IMAGES     "/ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_decreased_underlines/train/images_underlined_aug_included"
+bbox_json:    &BBOX_JSON        "/ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_decreased_underlines/train/labels/train_1005_underline_final2--NAME--GT.json"
+crops_json:   &CROPS_JSON       "/ssd_scratch/rohan.kumar/swaroopajinka/corpus_aug_decreased_underlines_dataset/train_crops.json"
+word_only:    &WORD_ONLY_DIR    "/ssd_scratch/rohan.kumar/swaroopajinka/corpus_aug_decreased_underlines_dataset/WORD_ONY_TRAIN"
+word_cw:      &WORD_CW_DIR      "/ssd_scratch/rohan.kumar/swaroopajinka/corpus_aug_decreased_underlines_dataset/WORD_CW_TRAIN"
 
 generate_json:
   image_folder:        *INPUT_IMAGES
   output_json:         *BBOX_JSON
-  load_fine_tune_model: false
-  pretrained_model_path: null
-  batch_size:          64
-  device:              "cuda:0"
+  load_fine_tune_model: true
+  pretrained_model_path: "/ssd_scratch/rohan.kumar/db_resnet50.pt"
+  device:              "cuda"
   extensions:
     - ".png"
     - ".jpg"
@@ -36,13 +37,13 @@ extract_cw:
   output_word_crops_path: *WORD_ONLY_DIR
   pad_cropped_frame:      "y"
   context_window_type:    "word CW"
-  sequence_size:          100
+  sequence_size:          125
   aspect_ratio:           1.3334
   word_bbox_padding_offset: 0.1
   extract_attributes:
     T1: true
     T2: true
 
-image_organization:
+organize:
   source_folder: *WORD_ONLY_DIR
   dest_folder:   *WORD_CW_DIR
