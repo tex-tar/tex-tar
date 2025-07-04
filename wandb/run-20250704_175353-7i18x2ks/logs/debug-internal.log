@@ -1,0 +1,18 @@
+{"time":"2025-07-04T17:53:53.289397287Z","level":"INFO","msg":"using version","core version":"0.18.3"}
+{"time":"2025-07-04T17:53:53.289415595Z","level":"INFO","msg":"created symlink","path":"wandb/run-20250704_175353-7i18x2ks/logs/debug-core.log"}
+{"time":"2025-07-04T17:53:53.573450448Z","level":"ERROR","msg":"dialing: google: could not find default credentials. See https://cloud.google.com/docs/authentication/external/set-up-adc for more information"}
+{"time":"2025-07-04T17:53:53.580795192Z","level":"INFO","msg":"created new stream","id":"7i18x2ks"}
+{"time":"2025-07-04T17:53:53.580837076Z","level":"INFO","msg":"stream: started","id":"7i18x2ks"}
+{"time":"2025-07-04T17:53:53.580849725Z","level":"INFO","msg":"handler: started","stream_id":{"value":"7i18x2ks"}}
+{"time":"2025-07-04T17:53:53.580870226Z","level":"INFO","msg":"sender: started","stream_id":{"value":"7i18x2ks"}}
+{"time":"2025-07-04T17:53:53.580848764Z","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"7i18x2ks"}}
+{"time":"2025-07-04T17:53:54.025842469Z","level":"INFO","msg":"wandb-core","!BADKEY":null}
+{"time":"2025-07-04T17:53:54.026621251Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-07-04T17:53:54.642191476Z","level":"INFO","msg":"stream: closing","id":"7i18x2ks"}
+{"time":"2025-07-04T17:53:54.642270566Z","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-07-04T17:53:54.650681469Z","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-07-04T17:53:56.121495759Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-07-04T17:53:56.462457077Z","level":"INFO","msg":"handler: closed","stream_id":{"value":"7i18x2ks"}}
+{"time":"2025-07-04T17:53:56.462496436Z","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"7i18x2ks"}}
+{"time":"2025-07-04T17:53:56.462502055Z","level":"INFO","msg":"sender: closed","stream_id":{"value":"7i18x2ks"}}
+{"time":"2025-07-04T17:53:56.462587915Z","level":"INFO","msg":"stream: closed","id":"7i18x2ks"}

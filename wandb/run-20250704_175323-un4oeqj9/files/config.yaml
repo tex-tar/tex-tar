@@ -1,0 +1,99 @@
+_wandb:
+    value:
+        cli_version: 0.18.3
+        m: []
+        python_version: 3.10.15
+        t:
+            "1":
+                - 1
+                - 2
+                - 3
+                - 5
+                - 11
+                - 41
+                - 49
+                - 53
+                - 55
+                - 63
+            "2":
+                - 1
+                - 2
+                - 3
+                - 5
+                - 11
+                - 41
+                - 49
+                - 53
+                - 55
+                - 63
+            "3":
+                - 13
+                - 16
+                - 23
+                - 55
+            "4": 3.10.15
+            "5": 0.18.3
+            "6": 4.45.2
+            "8":
+                - 2
+                - 5
+            "12": 0.18.3
+            "13": linux-x86_64
+accumulated_batch_descent:
+    value: 2
+batch_size:
+    value: 1600
+bounding_box_label_jsons:
+    value:
+        train: /ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_decreased_underlines/train/labels/train_1005_underline_final2--NAME--GT.json
+        val: /ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_decreased_underlines/val/labels/val_augmented.json
+checkpoint_dir:
+    value: /ssd_scratch/rohan.kumar/swaroopajinka/checkpoints
+dataloader:
+    value:
+        train: DocLevelDataset_RoPE_Train
+        val: DocLevelDataset_RoPE_Val_name
+datasets:
+    value:
+        train: /ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_strikeout_uands_underlined_copied/T2_125/word_CW/train
+        val: /ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_strikeout_uands_underlined_copied/T2_125/word_CW/val
+epochs:
+    value: 100
+label_split:
+    value:
+        - 4
+        - 4
+load_pretrained_function:
+    value: "False"
+loss_fn:
+    value:
+        train: train_loss
+        val: val_loss
+loss_types:
+    value:
+        train: ce
+        val: ce
+loss_weights:
+    value:
+        - 0.25
+        - 0.75
+lr:
+    value: 0.0001
+model:
+    value: textar_base
+num_workers:
+    value: 8
+optimizer:
+    value: adam
+pretrained:
+    value: "False"
+run_name:
+    value: test-run-1
+sequence_size:
+    value: 125
+shuffle:
+    value: true
+use_wandb:
+    value: true
+wandb_project_name:
+    value: T1-9Aug

@@ -1,0 +1,34 @@
+/home/rohan.kumar/tex-tar/src/utils/run_utils.py:26: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  ckpt = torch.load(path, map_location='cpu')
+Traceback (most recent call last):
+  File "/home/rohan.kumar/tex-tar/main.py", line 104, in <module>
+    Pipeline().run()
+  File "/home/rohan.kumar/tex-tar/main.py", line 48, in __init__
+    self.start_epoch = self._load_pretrained()
+  File "/home/rohan.kumar/tex-tar/main.py", line 79, in _load_pretrained
+    epoch, tr_loss, val_loss = load_checkpoint(
+  File "/home/rohan.kumar/tex-tar/src/utils/run_utils.py", line 26, in load_checkpoint
+    ckpt = torch.load(path, map_location='cpu')
+  File "/ssd_scratch/miniconda3/envs/rohan_surya/lib/python3.10/site-packages/torch/serialization.py", line 1065, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/ssd_scratch/miniconda3/envs/rohan_surya/lib/python3.10/site-packages/torch/serialization.py", line 468, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/ssd_scratch/miniconda3/envs/rohan_surya/lib/python3.10/site-packages/torch/serialization.py", line 449, in __init__
+    super().__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: 'False'
+Traceback (most recent call last):
+  File "/home/rohan.kumar/tex-tar/main.py", line 104, in <module>
+    Pipeline().run()
+  File "/home/rohan.kumar/tex-tar/main.py", line 48, in __init__
+    self.start_epoch = self._load_pretrained()
+  File "/home/rohan.kumar/tex-tar/main.py", line 79, in _load_pretrained
+    epoch, tr_loss, val_loss = load_checkpoint(
+  File "/home/rohan.kumar/tex-tar/src/utils/run_utils.py", line 26, in load_checkpoint
+    ckpt = torch.load(path, map_location='cpu')
+  File "/ssd_scratch/miniconda3/envs/rohan_surya/lib/python3.10/site-packages/torch/serialization.py", line 1065, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/ssd_scratch/miniconda3/envs/rohan_surya/lib/python3.10/site-packages/torch/serialization.py", line 468, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/ssd_scratch/miniconda3/envs/rohan_surya/lib/python3.10/site-packages/torch/serialization.py", line 449, in __init__
+    super().__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: 'False'

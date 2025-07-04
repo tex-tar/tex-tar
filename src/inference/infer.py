@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 from pathlib import Path 
 from dataset_util import WordData, cwData
 
-from model_files.consent_rope_selective import model
+from model_files.TexTAR_rope_selective import model
 
 
 class InferenceProcessor:

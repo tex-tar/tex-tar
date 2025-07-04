@@ -1,0 +1,19 @@
+{"time":"2025-07-04T17:56:11.306487771Z","level":"INFO","msg":"using version","core version":"0.18.3"}
+{"time":"2025-07-04T17:56:11.306514281Z","level":"INFO","msg":"created symlink","path":"wandb/run-20250704_175611-y74zdyeo/logs/debug-core.log"}
+{"time":"2025-07-04T17:56:11.376727147Z","level":"ERROR","msg":"dialing: google: could not find default credentials. See https://cloud.google.com/docs/authentication/external/set-up-adc for more information"}
+{"time":"2025-07-04T17:56:11.383051462Z","level":"INFO","msg":"created new stream","id":"y74zdyeo"}
+{"time":"2025-07-04T17:56:11.383075469Z","level":"INFO","msg":"stream: started","id":"y74zdyeo"}
+{"time":"2025-07-04T17:56:11.383083321Z","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"y74zdyeo"}}
+{"time":"2025-07-04T17:56:11.383107047Z","level":"INFO","msg":"sender: started","stream_id":{"value":"y74zdyeo"}}
+{"time":"2025-07-04T17:56:11.383123942Z","level":"INFO","msg":"handler: started","stream_id":{"value":"y74zdyeo"}}
+{"time":"2025-07-04T17:56:11.871488092Z","level":"INFO","msg":"wandb-core","!BADKEY":null}
+{"time":"2025-07-04T17:56:11.872179962Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-07-04T17:56:12.482201019Z","level":"INFO","msg":"stream: closing","id":"y74zdyeo"}
+{"time":"2025-07-04T17:56:12.482233769Z","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-07-04T17:56:12.49039869Z","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-07-04T17:56:17.363175555Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-07-04T17:56:17.484741305Z","level":"ERROR","msg":"monitor: gpu: timeout waiting for process to exit"}
+{"time":"2025-07-04T17:56:17.708217222Z","level":"INFO","msg":"handler: closed","stream_id":{"value":"y74zdyeo"}}
+{"time":"2025-07-04T17:56:17.708272687Z","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"y74zdyeo"}}
+{"time":"2025-07-04T17:56:17.708303754Z","level":"INFO","msg":"sender: closed","stream_id":{"value":"y74zdyeo"}}
+{"time":"2025-07-04T17:56:17.708388372Z","level":"INFO","msg":"stream: closed","id":"y74zdyeo"}

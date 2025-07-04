@@ -1,0 +1,26 @@
+2025-07-04 17:56:11,302 INFO    MainThread:3926076 [wandb_setup.py:_flush():79] Current SDK version is 0.18.3
+2025-07-04 17:56:11,302 INFO    MainThread:3926076 [wandb_setup.py:_flush():79] Configure stats pid to 3926076
+2025-07-04 17:56:11,302 INFO    MainThread:3926076 [wandb_setup.py:_flush():79] Loading settings from /home/rohan.kumar/.config/wandb/settings
+2025-07-04 17:56:11,302 INFO    MainThread:3926076 [wandb_setup.py:_flush():79] Loading settings from /home/rohan.kumar/tex-tar/wandb/settings
+2025-07-04 17:56:11,302 INFO    MainThread:3926076 [wandb_setup.py:_flush():79] Loading settings from environment variables: {'root_dir': ''}
+2025-07-04 17:56:11,302 INFO    MainThread:3926076 [wandb_setup.py:_flush():79] Applying setup settings: {'mode': None, '_disable_service': None}
+2025-07-04 17:56:11,302 INFO    MainThread:3926076 [wandb_setup.py:_flush():79] Inferring run settings from compute environment: {'program_relpath': 'main.py', 'program_abspath': '/home/rohan.kumar/tex-tar/main.py', 'program': '/home/rohan.kumar/tex-tar/main.py'}
+2025-07-04 17:56:11,302 INFO    MainThread:3926076 [wandb_setup.py:_flush():79] Applying login settings: {}
+2025-07-04 17:56:11,302 INFO    MainThread:3926076 [wandb_init.py:_log_setup():532] Logging user logs to wandb/run-20250704_175611-y74zdyeo/logs/debug.log
+2025-07-04 17:56:11,302 INFO    MainThread:3926076 [wandb_init.py:_log_setup():533] Logging internal logs to wandb/run-20250704_175611-y74zdyeo/logs/debug-internal.log
+2025-07-04 17:56:11,302 INFO    MainThread:3926076 [wandb_init.py:init():617] calling init triggers
+2025-07-04 17:56:11,302 INFO    MainThread:3926076 [wandb_init.py:init():624] wandb.init called with sweep_config: {}
+config: {'label_split': [4, 4], 'sequence_size': 125, 'optimizer': 'adam', 'lr': 0.0001, 'model': 'textar_base', 'loss_fn': {'train': 'train_loss', 'val': 'val_loss'}, 'loss_weights': [0.25, 0.75], 'loss_types': {'train': 'ce', 'val': 'ce'}, 'datasets': {'train': '/ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_strikeout_uands_underlined_copied/T2_125/word_CW/train', 'val': '/ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_strikeout_uands_underlined_copied/T2_125/word_CW/val'}, 'bounding_box_label_jsons': {'train': '/ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_decreased_underlines/train/labels/train_1005_underline_final2--NAME--GT.json', 'val': '/ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_decreased_underlines/val/labels/val_augmented.json'}, 'batch_size': 1600, 'pretrained': False, 'load_pretrained_function': 'False', 'accumulated_batch_descent': 2, 'dataloader': {'train': 'DocLevelDataset_RoPE_Train', 'val': 'DocLevelDataset_RoPE_Val_name'}, 'num_workers': 8, 'use_wandb': True, 'run_name': 'test-run-1', 'shuffle': True, 'wandb_project_name': 'T1-9Aug', 'epochs': 100, 'checkpoint_dir': '/ssd_scratch/rohan.kumar/swaroopajinka/checkpoints'}
+2025-07-04 17:56:11,302 INFO    MainThread:3926076 [wandb_init.py:init():667] starting backend
+2025-07-04 17:56:11,302 INFO    MainThread:3926076 [wandb_init.py:init():671] sending inform_init request
+2025-07-04 17:56:11,303 INFO    MainThread:3926076 [backend.py:_multiprocessing_setup():104] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2025-07-04 17:56:11,303 INFO    MainThread:3926076 [wandb_init.py:init():684] backend started and connected
+2025-07-04 17:56:11,304 INFO    MainThread:3926076 [wandb_init.py:init():779] updated telemetry
+2025-07-04 17:56:11,309 INFO    MainThread:3926076 [wandb_init.py:init():812] communicating run to backend with 90.0 second timeout
+2025-07-04 17:56:11,869 INFO    MainThread:3926076 [wandb_init.py:init():863] starting run threads in backend
+2025-07-04 17:56:11,982 INFO    MainThread:3926076 [wandb_run.py:_console_start():2465] atexit reg
+2025-07-04 17:56:11,982 INFO    MainThread:3926076 [wandb_run.py:_redirect():2313] redirect: wrap_raw
+2025-07-04 17:56:11,982 INFO    MainThread:3926076 [wandb_run.py:_redirect():2378] Wrapping output streams.
+2025-07-04 17:56:11,982 INFO    MainThread:3926076 [wandb_run.py:_redirect():2403] Redirects installed.
+2025-07-04 17:56:11,983 INFO    MainThread:3926076 [wandb_init.py:init():907] run started, returning control to user process
+2025-07-04 17:56:12,482 WARNING MsgRouterThr:3926076 [router.py:message_loop():77] message_loop has been closed

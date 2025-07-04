@@ -1,7 +1,6 @@
 from torchvision.models import resnet18
 import torch.nn as nn
 import functools
-import random
 import numpy as np
 import torch
 from functools import partial
@@ -14,7 +13,7 @@ from timm.models.vision_transformer import Mlp, PatchEmbed , _cfg
 from timm.models.layers import DropPath, to_2tuple, trunc_normal_
 from timm.models.registry import register_model
 
-from deit.models_v2 import vit_models, Layer_scale_init_Block, Attention
+from src.architectures.deit.models_v2 import Layer_scale_init_Block, Attention
 
 
 
@@ -166,9 +165,9 @@ class Encoder(nn.Module):
 Composite model
 """
 
-class CONSENT(nn.Module):
+class TexTAR(nn.Module):
     def __init__(self, model1, model2, model3,model4,sequence_size,num_heads,rope_theta, img_size,norm_weights_x,norm_weights_y):
-        super(CONSENT, self).__init__()
+        super(TexTAR, self).__init__()
         self.model1 = model1
         self.model2 = model2
         self.model3_head = model3
@@ -229,5 +228,5 @@ model1 = feature_extractor
 model3 = feed_forward_t1
 model4 = feed_forward_t2
 
-model = functools.partial(CONSENT,model1=model1,model2=model2,model3=model3,model4=model4,num_heads=n_heads,rope_theta=10, img_size=(128,96),norm_weights_x=60,norm_weights_y=14)
+model = functools.partial(TexTAR,model1=model1,model2=model2,model3=model3,model4=model4,num_heads=n_heads,rope_theta=10, img_size=(128,96),norm_weights_x=60,norm_weights_y=14)
 model = model(sequence_size=125)

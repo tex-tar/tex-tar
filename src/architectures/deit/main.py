@@ -23,7 +23,7 @@ from losses import DistillationLoss
 from samplers import RASampler
 from augment import new_data_aug_generator
 
-import models
+import architectures
 import models_v2
 
 import utils

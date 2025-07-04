@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/home/rohan.kumar/tex-tar/main.py", line 105, in <module>
+    Pipeline().run()
+  File "/home/rohan.kumar/tex-tar/main.py", line 50, in __init__
+    if self.cfg['isWandb']:
+KeyError: 'isWandb'
+Traceback (most recent call last):
+  File "/home/rohan.kumar/tex-tar/main.py", line 105, in <module>
+    Pipeline().run()
+  File "/home/rohan.kumar/tex-tar/main.py", line 50, in __init__
+    if self.cfg['isWandb']:
+KeyError: 'isWandb'

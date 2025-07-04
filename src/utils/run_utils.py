@@ -1,9 +1,8 @@
 import importlib
-import json
+import yaml
 import random
 import numpy as np
 import torch
-from collections import defaultdict
 
 def set_seed(seed: int):
     """Make training reproducible."""
@@ -14,13 +13,14 @@ def set_seed(seed: int):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark     = False
 
-def load_json(path: str) -> dict:
+def load_yaml(path: str) -> dict:
     with open(path, 'r') as f:
-        return json.load(f)
+        cfg = yaml.safe_load(f)
+    return cfg
 
 def load_module(module_name: str, pkg: str):
     """Dynamically import `utils.<pkg>.<module_name>` and return it."""
-    return importlib.import_module(f"utils.{pkg}.{module_name}")
+    return importlib.import_module(f"src.{pkg}.{module_name}")
 
 def load_checkpoint(model: torch.nn.Module, path: str):
     ckpt = torch.load(path, map_location='cpu')
