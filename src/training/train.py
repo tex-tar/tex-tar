@@ -7,6 +7,7 @@ from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from src.dataloader.transform import loader_transform_train
 from src.dataloader import dataloader
+from src.utils.helper import initialize_loss
 from tqdm import tqdm
 
 class Trainer:
@@ -28,7 +29,7 @@ class Trainer:
         # ---- 4) loss fn ----
         loss_mod = importlib.import_module(f"src.loss_functions.{cfg['loss_fn']['train']}")
         self.calculate_loss = loss_mod.calculate_loss
-        self.loss_types   = cfg['loss_types']['train']
+        self.loss_types   = [initialize_loss(cfg['loss_types']['train'][idx]) for idx in range(len(cfg['loss_types']['train']))]
         self.loss_weights = cfg['loss_weights']
 
         # ---- 5) data loaders ----
@@ -77,8 +78,8 @@ class Trainer:
 
             if batch_count % self.accumulation_steps == 0:
                 print(f"Epoch {epoch} :: Batch count {batch_count} :: Train loss : {total_loss/batch_count}")
-                self.optimizer.step()
-                self.optimizer.zero_grad()
+                optimizer.step()
+                optimizer.zero_grad()
 
         avg_loss = total_loss / batch_count
         return avg_loss

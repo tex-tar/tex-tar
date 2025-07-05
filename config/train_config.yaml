@@ -1,4 +1,5 @@
 label_split: [4, 4]
+purpose: test
 sequence_size: 125
 optimizer: adam
 lr: 0.0001
@@ -10,17 +11,17 @@ loss_weights:
   - 0.25
   - 0.75
 loss_types:
-  train: ce
-  val: ce
+  train: [train_wce,train_wce]
+  val: [train_wce,train_wce]
 datasets:
   train: /ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_strikeout_uands_underlined_copied/T2_125/word_CW/train
-  val: /ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_strikeout_uands_underlined_copied/T2_125/word_CW/val
+  val: /ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_strikeout_uands_underlined_copied/T2_125/word_CW/test
 bounding_box_label_jsons:
   train: /ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_decreased_underlines/train/labels/train_1005_underline_final2--NAME--GT.json
-  val: /ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_decreased_underlines/val/labels/val_augmented.json
+  # val: /ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_decreased_underlines/val/labels/val_augmented.json  
+  val: /ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_decreased_underlines/test/labels/test_augmented_2--NAME--ORIGNAL.json
 batch_size: 1600
-pretrained: false
-load_pretrained_function: "False"
+pretrained: /ssd_scratch/rohan.kumar/swaroopajinka/weights_textar_base/textar-base-best_avg_acc.pt
 accumulated_batch_descent: 2
 dataloader:
   train: DocLevelDataset_RoPE_Train
@@ -31,4 +32,4 @@ run_name: test-run-1
 shuffle: true
 wandb_project_name: T1-9Aug
 epochs: 100
-checkpoint_dir: /ssd_scratch/rohan.kumar/swaroopajinka/checkpoints
+checkpoint_dir: /home/rohan.kumar/tex-tar/weights

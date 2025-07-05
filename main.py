@@ -9,34 +9,9 @@ from src.utils.run_utils import (
 
 from src.training.train import Trainer
 from src.validation.val import Validator
+from src.utils.helper import initialize_optimizer
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-
-def initialize_optimizer(optimizer_name, learning_rate, parameters,model=None):
-    optimizer_name = optimizer_name.lower()
-    if optimizer_name == 'adam':
-        optimizer = optim.Adam(parameters, lr=learning_rate)
-    elif optimizer_name == 'adam_mtl':
-        lrlast = .001
-        lrmain = .0001
-        optimizer = optim.Adam([
-            {"params": model.resnet_model.parameters(), "lr": lrmain},
-            {"params": model.x1.parameters(), "lr": lrlast},
-            {"params": model.x2.parameters(), "lr": lrlast},
-            {"params": model.y1o.parameters(), "lr": lrlast},
-            {"params": model.y2o.parameters(), "lr": lrlast},
-        ])
-
-    elif optimizer_name == 'sgd':
-        optimizer = optim.SGD(parameters, lr=learning_rate)
-    elif optimizer_name == 'adadelta':
-        optimizer = optim.Adadelta(parameters, lr=learning_rate)
-    elif optimizer_name == 'rmsprop':
-        optimizer = optim.RMSprop(parameters, lr=learning_rate)        
-    else:
-        raise ValueError(f"Optimizer '{optimizer_name}' is not supported.")
-    
-    return optimizer
 
 class Pipeline:
     def __init__(self, cfg_path='config/train_config.yaml'):
@@ -45,7 +20,7 @@ class Pipeline:
         os.environ['WANDB_DIR'] = self.cfg.get('wandb_dir', os.getenv('WANDB_DIR',''))
         self.checkpoint_dir     = self.cfg['checkpoint_dir']
         os.makedirs(self.checkpoint_dir, exist_ok=True)
-        
+        self.purpose = self.cfg['purpose']
         self._build_architecture()
         
         self.start_epoch = self._load_pretrained()
@@ -90,19 +65,46 @@ class Pipeline:
     def run(self):
         start_ep = self.start_epoch
         best_avg_accuracy = 0
-        avg_acc=0
+        min_loss=0
+        max_f1=0
         for e in range(start_ep, self.cfg['epochs']):
             train_loss = self.trainer.run_epoch(self.model,self.optimizer,e)
-            val_loss,val_accs = self.validator.validate(self.model)
+            val_loss,val_accs, f1_report = self.validator.validate(self.model)
             print(f"Epoch : {e} :: Train loss : {train_loss} Val loss : {val_loss}")
+            avg_acc=0
+            
             for cat_id in val_accs:
                 print(f"Val Accuracy for Type {cat_id+1} :",val_accs[cat_id])
                 avg_acc+=val_accs[cat_id]
-            avg_acc /=len(val_accs)
-            if best_avg_accuracy<avg_acc:
+            avg_acc /=len(list(val_accs.keys()))
+            if best_avg_accuracy<=avg_acc:
                 best_avg_accuracy = avg_acc
                 self.save_model(epoch_id=e,train_loss=train_loss,val_loss=val_loss,type="best_avg_acc",save_name="textar-base")
-            
-
+            if min_loss>=val_loss:
+                min_loss = val_loss
+                self.save_model(epoch_id=e,train_loss=train_loss,val_loss=val_loss,type="best_loss",save_name="textar-base")
+            if max_f1<=f1_report:
+                max_f1 = f1_report
+                self.save_model(epoch_id=e,train_loss=train_loss,val_loss=val_loss,type="best_f1_textar_eval",save_name="textar-base")
+                
+            print("F1 score report :", f1_report)
+            wandb.log({"train_loss":train_loss, "val_loss":val_loss, "val_avg_acc":avg_acc})
+    
+    def eval(self):
+        val_loss,val_accs, f1_report = self.validator.validate(self.model)
+        avg_acc=0.0
+        for cat_id in val_accs:
+            avg_acc+=val_accs[cat_id]
+        avg_acc /=len(list(val_accs.keys()))
+        
+        print(f"Test loss : {val_loss} :: Test accuracy : {avg_acc}")
+        print(f"Test F1-score : {f1_report}")
+    
 if __name__=="__main__":
-    Pipeline().run()
+    pipeline = Pipeline()
+    if pipeline.purpose=='test':
+        pipeline.eval()
+    elif pipeline.purpose=='train':
+        pipeline.run()
+    else:
+        print("Please enter a valid purpose for the pipeline.")

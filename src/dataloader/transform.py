@@ -24,3 +24,8 @@ loader_transform_val = transforms.Compose([
     transforms.Resize((128,96)),
     transforms.ToTensor()
 ])
+
+loader_transform_test = transforms.Compose([
+    transforms.Resize((128,96)),
+    transforms.ToTensor()
+])
