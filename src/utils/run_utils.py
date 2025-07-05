@@ -22,9 +22,13 @@ def load_module(module_name: str, pkg: str):
     """Dynamically import `utils.<pkg>.<module_name>` and return it."""
     return importlib.import_module(f"src.{pkg}.{module_name}")
 
-def load_checkpoint(model: torch.nn.Module, path: str):
+def load_checkpoint(model: torch.nn.Module, path: str, pretrained_func):
     ckpt = torch.load(path, map_location='cpu')
-    model.load_state_dict(ckpt['model_state_dict'])
+    state_dict = ckpt['model_state_dict']
+    if pretrained_func!=None:
+        pretrained_func(model,state_dict)
+    else:
+        model.load_state_dict(state_dict)
     return ckpt['epoch'], ckpt['train_loss'], ckpt['val_loss']
 
 def weighted_avg(f1_dict, weights):

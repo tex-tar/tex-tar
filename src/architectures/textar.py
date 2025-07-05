@@ -191,7 +191,10 @@ class TexTAR(nn.Module):
             freqs = torch.stack(freqs, dim=1).view(2, len(self.blocks), -1)
             self.freqs = nn.Parameter(freqs.clone(), requires_grad=True)
 
-    def forward(self,input_data,coods):
+    def forward(self,input_data,supp):
+        coods = torch.stack(supp['coods']) if not torch.is_tensor(supp['coods']) else supp['coods']
+        coods = coods.view(-1,coods.size(-1))
+        coods = coods.view(coods.size(0)//self.sequence_size,self.sequence_size,coods.size(-1))
         input_data = input_data.view(-1,3,128,96)
         output1 = self.model1(input_data)
         
@@ -217,7 +220,7 @@ class TexTAR(nn.Module):
         final_output1 = self.model3_head(output_cat)
         final_output2 = self.model4_head(output_cat)
         
-        return [final_output1,final_output2,torch.zeros((final_output1.size(0),6))]
+        return torch.cat([final_output1,final_output2],dim=-1)
 
 """
 End

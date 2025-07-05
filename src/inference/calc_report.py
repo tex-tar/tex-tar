@@ -1,6 +1,6 @@
 """
 Calculate the classification report after aggregating the prediction from different context windows
-"""
+ """
 import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
@@ -17,6 +17,8 @@ def evaluate_textar(preds_all, imgs_all, bbox_info_labels ,root_path="",sequence
     t1 = {0:"no_bi",1:"bold",2:"italic",3:"b+i"}
     t2 = {0:"no_us",1:"underlined",2:"strikeout",3:"u+s"}
     word_bb_map = {}
+    print(torch.bincount(torch.argmax(torch.tensor(preds_all[1]),dim=-1)))
+
     for ind,img_file in enumerate(imgs_all):
         prediction_t1 = preds_all[0][ind]
         prediction_t2 = preds_all[1][ind]

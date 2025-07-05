@@ -6,6 +6,7 @@ from src.utils.run_utils import (
     set_seed, load_yaml,load_module,
     load_checkpoint
 )
+from src.utils import pretrained_helper
 
 from src.training.train import Trainer
 from src.validation.val import Validator
@@ -55,8 +56,11 @@ class Pipeline:
 
     def _load_pretrained(self):
         if self.cfg['pretrained']:
+            pretrained_func = self.cfg.get('pretrained_function',None)
+            if pretrained_func!=None:
+                pretrained_func = getattr(pretrained_helper,pretrained_func)
             epoch, tr_loss, val_loss = load_checkpoint(
-                self.model, self.cfg['pretrained']
+                self.model, self.cfg['pretrained'], pretrained_func
             )
             print(f"Resumed from epoch {epoch}, train loss={tr_loss}, val loss={val_loss}")
             return epoch
@@ -65,7 +69,7 @@ class Pipeline:
     def run(self):
         start_ep = self.start_epoch
         best_avg_accuracy = 0
-        min_loss=0
+        min_loss=1e9
         max_f1=0
         for e in range(start_ep, self.cfg['epochs']):
             train_loss = self.trainer.run_epoch(self.model,self.optimizer,e)
@@ -78,17 +82,19 @@ class Pipeline:
                 avg_acc+=val_accs[cat_id]
             avg_acc /=len(list(val_accs.keys()))
             if best_avg_accuracy<=avg_acc:
+                print(f"UPDATED at epoch {e}")
                 best_avg_accuracy = avg_acc
-                self.save_model(epoch_id=e,train_loss=train_loss,val_loss=val_loss,type="best_avg_acc",save_name="textar-base")
+                self.save_model(epoch_id=e,train_loss=train_loss,val_loss=val_loss,type="best_avg_acc",save_name=self.cfg['model'])
             if min_loss>=val_loss:
                 min_loss = val_loss
-                self.save_model(epoch_id=e,train_loss=train_loss,val_loss=val_loss,type="best_loss",save_name="textar-base")
+                self.save_model(epoch_id=e,train_loss=train_loss,val_loss=val_loss,type="best_loss",save_name=self.cfg['model'])
             if max_f1<=f1_report:
                 max_f1 = f1_report
-                self.save_model(epoch_id=e,train_loss=train_loss,val_loss=val_loss,type="best_f1_textar_eval",save_name="textar-base")
+                self.save_model(epoch_id=e,train_loss=train_loss,val_loss=val_loss,type="best_f1_textar_eval",save_name=self.cfg['model'])
                 
             print("F1 score report :", f1_report)
-            wandb.log({"train_loss":train_loss, "val_loss":val_loss, "val_avg_acc":avg_acc})
+            if self.cfg['use_wandb']:
+                wandb.log({"train_loss":train_loss, "val_loss":val_loss, "val_avg_acc":avg_acc})
     
     def eval(self):
         val_loss,val_accs, f1_report = self.validator.validate(self.model)

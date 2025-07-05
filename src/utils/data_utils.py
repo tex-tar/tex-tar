@@ -282,70 +282,9 @@ def extract_cw(page_image,image_path,bbjson,cw_json,extract_dict,params,args,cw_
                         if bbjson[key][bbid]["bb_ids"][0]["attb"]["no_us"]==True:
                             build_name+="0-"
                             # cv2.imwrite(f'{extract_dict["T2"]}/0_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
-                    elif(k=="T3" and extract_dict[k]== True):
-                        build_name+= str(bbjson[key][bbid]["bb_ids"][0]["attb"]['textcolor_hisam_gmm'])+"-"
-                        '''if bbjson[key][bbid]["bb_ids"][0]["attb"]["redc"]==True:
-                            build_name+="0-"
-                            # cv2.imwrite('{extract_dict["T2"]}/3_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["cyanc"]==True:
-                            build_name+="1-"
-                            # cv2.imwrite(f'{extract_dict["T2"]}/1_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["greenc"]==True:
-                            build_name+="2-"
-                            # cv2.imwrite(f'{extract_dict["T2"]}/2_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["bluec"]==True:
-                            build_name+="3-"
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["yellow"]==True:
-                            build_name+="4-"
-                            # cv2.imwrite('{extract_dict["T2"]}/3_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["magnetac"]==True:
-                            build_name+="5-"
-                            # cv2.imwrite(f'{extract_dict["T2"]}/1_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["blackc"]==True:
-                            build_name+="6-"
-                            # cv2.imwrite(f'{extract_dict["T2"]}/2_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["whitec"]==True:
-                            build_name+="7-"
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["greyc"]==True:
-                            build_name+="8-"
-                            # cv2.imwrite(f'{extract_dict["T2"]}/2_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["brownc"]==True:
-                            build_name+="9-" '''
-
-                    elif(k=="T4" and extract_dict[k]== True):
-                        build_name+= str(bbjson[key][bbid]["bb_ids"][0]["attb"]['highlight_hisam'])+"-"
-                        '''if bbjson[key][bbid]["bb_ids"][0]["attb"]["redh"]==True:
-                            build_name+="0-"
-                            # cv2.imwrite('{extract_dict["T2"]}/3_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["cyanh"]==True:
-                            build_name+="1-"
-                            # cv2.imwrite(f'{extract_dict["T2"]}/1_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["greenh"]==True:
-                            build_name+="2-"
-                            # cv2.imwrite(f'{extract_dict["T2"]}/2_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["blueh"]==True:
-                            build_name+="3-"
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["yellowh"]==True:
-                            build_name+="4-"
-                            # cv2.imwrite('{extract_dict["T2"]}/3_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["magnetah"]==True:
-                            build_name+="5-"
-                            # cv2.imwrite(f'{extract_dict["T2"]}/1_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["blackh"]==True:
-                            build_name+="6-"
-                            # cv2.imwrite(f'{extract_dict["T2"]}/2_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["whiteh"]==True:
-                            build_name+="7-"
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["greyh"]==True:
-                            build_name+="8-"
-                            # cv2.imwrite(f'{extract_dict["T2"]}/2_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
-                        if bbjson[key][bbid]["bb_ids"][0]["attb"]["brownh"]==True:
-                            build_name+="9-" '''     
-
                     else:
                         continue
-                    # print(build_name)
-                #assert len(build_name)==4
+                    
                 num_writes+=1
                 cv2.imwrite(f'{params["path"]}/{build_name[:-1]}_{image_path}_{bbid}_CW_{cwid}_{ind}.png',crop)
         prev_id=cwid

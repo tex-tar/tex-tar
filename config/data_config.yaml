@@ -1,11 +1,11 @@
 # config/data_config.yaml
 skip_bounding_box_detection: true
 
-input_images: &INPUT_IMAGES     "/ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_decreased_underlines/train/images_underlined_aug_included"
-bbox_json:    &BBOX_JSON        "/ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_decreased_underlines/train/labels/train_1005_underline_final2--NAME--GT.json"
-crops_json:   &CROPS_JSON       "/ssd_scratch/rohan.kumar/swaroopajinka/corpus_aug_decreased_underlines_dataset/train_crops.json"
-word_only:    &WORD_ONLY_DIR    "/ssd_scratch/rohan.kumar/swaroopajinka/corpus_aug_decreased_underlines_dataset/WORD_ONY_TRAIN"
-word_cw:      &WORD_CW_DIR      "/ssd_scratch/rohan.kumar/swaroopajinka/corpus_aug_decreased_underlines_dataset/WORD_CW_TRAIN"
+input_images: &INPUT_IMAGES     "/ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_decreased_underlines/test/images2"
+bbox_json:    &BBOX_JSON        "/ssd_scratch/rohan.kumar/swaroopajinka/corpus_augmented_decreased_underlines/test/labels/test_augmented_2--NAME--ORIGNAL.json"
+crops_json:   &CROPS_JSON       "/ssd_scratch/rohan.kumar/swaroopajinka/TEST_SET_TexTAR/test_crops.json"
+word_only:    &WORD_ONLY_DIR    "/ssd_scratch/rohan.kumar/swaroopajinka/TEST_SET_TexTAR/WORD_ONY_TRAIN"
+word_cw:      &WORD_CW_DIR      "/ssd_scratch/rohan.kumar/swaroopajinka/TEST_SET_TexTAR/WORD_CW_TRAIN"
 
 generate_json:
   image_folder:        *INPUT_IMAGES

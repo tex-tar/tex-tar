@@ -94,7 +94,7 @@ class Validator:
 
             total_loss += loss.item()
             batch_count += 1
-        
+        # print(torch.bincount(torch.tensor(labels_cats[1])))        
         accuracies = {}
         # accuracy for each category T1 and T2
         for k,v in preds_cats.items():
@@ -102,8 +102,9 @@ class Validator:
             total = len(preds_cats[k])
             accuracy = (sum/total)*100
             accuracies[k] = accuracy
-        
+
         f1_agg_report,macro_F1_overall = evaluate_textar(preds_all=preds_cats_logits,imgs_all=imgs_names_cats,bbox_info_labels=self.val_dataset.bbjson,root_path=self.cfg['datasets']['val'])
+        print(f1_agg_report)
         avg_loss = total_loss / batch_count
         return avg_loss, accuracies, macro_F1_overall
 
