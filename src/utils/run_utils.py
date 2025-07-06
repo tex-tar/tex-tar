@@ -25,7 +25,7 @@ def load_module(module_name: str, pkg: str):
 def load_checkpoint(model: torch.nn.Module, path: str, pretrained_func):
     ckpt = torch.load(path, map_location='cpu')
     state_dict = ckpt['model_state_dict']
-    if pretrained_func!=None:
+    if pretrained_func!=None  and type(pretrained_func)!=bool:
         pretrained_func(model,state_dict)
     else:
         model.load_state_dict(state_dict)

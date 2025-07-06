@@ -201,7 +201,7 @@ class TexTAR(nn.Module):
         output1 = output1.view(input_data.size(0)//self.sequence_size,self.sequence_size,output1.size(-1))
         output2 = self.model2(output1)
 
-        x = copy.deepcopy(output2)
+        x = torch.clone(output2).detach()
         t_x, t_y = init_t_xy(coods)
         t_x = (self.norm_weights_x * t_x)
         t_y = (self.norm_weights_y * t_y)

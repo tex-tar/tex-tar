@@ -1,5 +1,6 @@
 src/generate_data/test.py
 src/utils/tester.py
 __pycache__
-weights/*.pt
-weights-textar-base/*.pt
+weights
+weights-textar-base
+weights_val_on_test
