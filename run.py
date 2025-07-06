@@ -57,7 +57,7 @@ class Pipeline:
     def _load_pretrained(self):
         if self.cfg['pretrained']:
             pretrained_func = self.cfg.get('pretrained_function',None)
-            if pretrained_func!=None:
+            if pretrained_func!=None and type(pretrained_func)!=bool:
                 pretrained_func = getattr(pretrained_helper,pretrained_func)
             epoch, tr_loss, val_loss = load_checkpoint(
                 self.model, self.cfg['pretrained'], pretrained_func

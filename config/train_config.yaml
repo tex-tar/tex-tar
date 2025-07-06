@@ -1,5 +1,5 @@
 label_split: [4, 4]
-purpose: test
+purpose: train
 sequence_size: 125
 optimizer: adam
 lr: 0.0001
