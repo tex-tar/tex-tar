@@ -17,7 +17,7 @@
 ## Table of Contents
 
 1. [Getting Started](#getting-started)  
-2. [Project Overview](#project overview)   
+2. [Project Overview](#project--overview)   
 3. [Outputs](#Outputs)  
 4. [Evaluation & Inference](#evaluation--inference)  
 5. [Citation](#citation)  
