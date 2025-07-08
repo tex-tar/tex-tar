@@ -17,7 +17,7 @@
 ## Table of Contents
 
 1. [Getting Started](#getting-started)  
-2. [Project & Model Overview](#project&Model-overview)   
+2. [Project Overview](#project overview)   
 3. [Outputs](#Outputs)  
 4. [Evaluation & Inference](#evaluation--inference)  
 5. [Citation](#citation)  
@@ -31,20 +31,40 @@
 To make the code run, install the necessary libraries 
 python3 -m venv .textar
 pip install -r requirements.txt
-
-To generate context windows, run 
-src/generate_data/data_pipeline.py
-
-To train a model,run
-src/main.py
-
-To inference a model, run
-src/inference/infer.py
 ```
 
 # Project Overview
 
-TexTAR is a context-aware Transformer for Textual Attribute Recognition (TAR), handling bold, italic, underline, and strike-out across noisy, multilingual documents. We introduce a fast data-selection pipeline that builds fixed-length context windows and a 2D Rotary Positional Embedding module to fuse local context. TexTAR outperforms prior methods, showing that richer context yields superior TAR accuracy.
+Recognizing textual attributes such as **bold**, *italic*, <u>underline</u>, and ~~strikeout~~ is essential for understanding text semantics, structure, and visual presentation. These attributes highlight key information—making them crucial for document analysis.  
+
+We introduce **TexTAR**, a multi-task, context-aware Transformer for Textual Attribute Recognition (TAR), capable of handling both positional cues (bold, italic) and visual cues (underline, strikeout) in noisy, multilingual document images. To support this, we also release **MMTAD**, a diverse, multilingual, multi-domain dataset annotated with these text attributes across real-world documents (legal records, notices, textbooks).  
+Predicting attributes from isolated word crops can be ambiguous—for instance, a table row separator may mimic an underline—so, along with TexTAR, we introduce a novel, efficient data-selection pipeline to extract neighborhood context via fixed-length context windows.
+
+<div align="center">
+  <img 
+    src="assets/attributes.png" 
+    alt="Data Selection Pipeline" 
+    style="max-width: 30%; max-height: 30%;" 
+  />
+</div>
+
+### Attribute Groups
+
+- **T1 group**  
+  `{ normal, bold, italic, bold & italic }`
+
+- **T2 group**  
+  `{ normal, underline, strikeout, underline & strikeout }`
+Our approach features:  
+1. **Fast data-selection pipeline** that extracts fixed-length context windows around each word.  
+2. **2D Rotary Positional Embeddings** to fuse spatial context into the Transformer.  
+3. **Multi-task heads** for simultaneous prediction of two attribute groups, yielding state-of-the-art accuracy on TAR benchmarks.
+
+
+---
+
+
+
 ## 1. Data Creation Pipeline
 
 1. **Bounding-Box Prediction**  
@@ -89,7 +109,7 @@ We employ a **two-stage** training scheme:
 
 # ⚙️ Configuration
 - **Data Creation Pipeline**: edit `config/data_config.yaml` to adjust paths, sequence size, random crop settings, etc for extracting data to give the input to the model 
-- **Model Training**: edit `config/train_config.yaml` (or `config/config.yaml`) to set learning rate, batch size, model name, datasets, optimizer, and other hyperparameters for training the model.
+- **Model Training**: edit `config/model_config.yaml` to set learning rate, batch size, model name, datasets, optimizer, and other hyperparameters for training the model.
 
 | Parameter                                     | Description          | Default Value                                           |
 |---------------------------------------|------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------|
@@ -111,7 +131,59 @@ We employ a **two-stage** training scheme:
 | image_organization.source_folder      | Source folder of all extracted word images to re‐group per CW.                                                               | *WORD_ONLY_DIR                                          |
 | image_organization.dest_folder        | Destination of the final context windows.                                                           | *WORD_CW_DIR 
 
-     
+
+# To run the code
+
+### 1. Generate Data  
+Run the entire data‐creation pipeline (bbox → context windows → word crops):
+
+```bash
+python3 data_pipeline.py
+```
+
+---
+
+### 2. Inference  
+1. Open **`model_config.yaml`** and set:
+   ```yaml
+   purpose: test
+   ```  
+2. Execute:
+   ```bash
+   python3 main.py
+   ```
+
+---
+
+### 3. Training  
+
+We employ a **two-stage** training strategy:
+
+#### Stage 1 – Base Pre-Training  
+1. In **`model_config.yaml`**, set:
+   ```yaml
+   purpose: train
+   pretrained: false
+   ```  
+2. Launch training:
+   ```bash
+   python3 main.py
+   ```
+
+#### Stage 2 – RoPE Fine-Tuning  
+1. After Stage 1 finishes, note your best checkpoint path (e.g. `checkpoints/best.pt`).  
+2. In **`model_config.yaml`**, update:
+   ```yaml
+   purpose: train
+   pretrained: "checkpoints/best.pt"
+   ```  
+3. Fine-tune:
+   ```bash
+   python3 main.py
+   ```
+
+---
+
 # Outputs
 After running the full dataset pipeline. you should see something like 
 /data/textar_outputs/
@@ -193,7 +265,8 @@ Please use the following BibTeX entry for citation .
 @article{Kumar2025TexTAR,
   title   = {TexTAR: Textual Attribute Recognition in Multi-domain and Multi-lingual Document Images},
   author  = {Rohan Kumar and Jyothi Swaroopa Jinka and Ravi Kiran Sarvadevabhatla},
-  journal = {arXiv},
+  booktitle = {International Conference on Document Analysis and Recognition,
+            {ICDAR}},
   year    = {2025}
 }
 

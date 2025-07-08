@@ -15,7 +15,7 @@ from src.utils.helper import initialize_optimizer
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 class Pipeline:
-    def __init__(self, cfg_path='config/train_config.yaml'):
+    def __init__(self, cfg_path='config/model_config.yaml'):
         set_seed(21)
         self.cfg = load_yaml(cfg_path)
         os.environ['WANDB_DIR'] = self.cfg.get('wandb_dir', os.getenv('WANDB_DIR',''))
@@ -107,7 +107,8 @@ class Pipeline:
         print(f"Test F1-score : {f1_report}")
     
 if __name__=="__main__":
-    pipeline = Pipeline()
+    cfg_path='config/model_config.yaml'
+    pipeline = Pipeline(cfg_path)
     if pipeline.purpose=='test':
         pipeline.eval()
     elif pipeline.purpose=='train':
