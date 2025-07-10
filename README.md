@@ -269,7 +269,6 @@ After inference , the output will be a json file where it contains all the predi
     alt="Model Architecture" 
     style="max-width: 60%; height: auto;" 
   
-  />
 </div>
 
 # Download Dataset and Weights
