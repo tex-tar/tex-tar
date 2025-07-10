@@ -45,7 +45,7 @@ Predicting attributes from isolated word crops can be ambiguous—for instance, 
   <img 
     src="assets/attributes.png" 
     alt="Data Selection Pipeline" 
-    style="max-width: 30%; max-height: 30%;" 
+    style="max-width: 60%; height: auto;" 
 
 </div>
 
@@ -260,6 +260,19 @@ After inference , the output will be a json file where it contains all the predi
 - **Metric:** We use the F1-score to balance precision and recall, making it robust to the natural class imbalance in attributes like bold, italic, underline, and strikeout.  
 - **Inference Pipeline:** At test time, each image goes through our two-stage pipeline (bbox detection → context-window generation → model prediction). The model’s per-word attribute outputs are compared against ground truth using the F1 metric to quantify recognition performance.                                  
 
+# Visualization of results for a subset of baselines and variants in comparison with TexTAR
+<div align="center">
+  <img 
+    src="assets/results-comparision.png" 
+    alt="Model Architecture" 
+    style="max-width: 60%; height: auto;" 
+  
+  />
+</div>
+# Download Dataset & Weights
+
+Model weights and the MMTAD testset can be downloaded from the [link]("https://zenodo.com). To get access to the full dataset, please contact [Dr. Ravi Kiran Sarvadevabhatla](mailto:ravi.kiran@iiit.ac.in.)
+
 
 # Citation
 Please use the following BibTeX entry for citation .
@@ -276,5 +289,3 @@ Please use the following BibTeX entry for citation .
 ```
 # Contact
 For any queries, please contact [Dr. Ravi Kiran Sarvadevabhatla](mailto:ravi.kiran@iiit.ac.in.)
-
-
