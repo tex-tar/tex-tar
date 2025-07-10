@@ -19,9 +19,9 @@
 1. [Getting Started](#getting-started)  
 2. [Project Overview](#project-overview)   
 3. [Outputs](#outputs)  
-4. [Evaluation & Inference](#evaluation-&-inference)  
+4. [Evaluation and Inference](#evaluation-and-inference)  
 5. [Visualization of Results](#visualization-of-results-for-a-subset-of-baselines-and-variants-in-comparison-with-textar)  
-6. [Download Dataset & Weights](#download-dataset-&-weights)
+6. [Download Dataset and Weights](#download-dataset-and-weights)
 7. [Citation](#citation)  
 8. [Contact](#contact)  
 
