@@ -177,6 +177,7 @@ We employ a **two-stage** training strategy:
    ```yaml
    purpose: train
    pretrained: "checkpoints/best.pt"
+   pretrained_function: freeze_backbone
    ```  
 3. Fine-tune:
    ```bash
