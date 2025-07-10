@@ -16,13 +16,14 @@
 
 ## Table of Contents
 
-1. [Getting Started](#getting-started)  
-2. [Project Overview](#project--overview)   
-3. [Outputs](#Outputs)  
-4. [Evaluation & Inference](#evaluation--inference)  
-5. [Download Dataset & Weights](#download-dataset-weights)
-5. [Citation](#citation)  
-6. [Contact](#contact)  
+1. [Getting Started](#getting-started)
+2. [Project Overview](#project-overview)
+3. [Outputs](#outputs)
+4. [Evaluation & Inference](#evaluation-inference)
+5. [Visualization of Results](#visualization-of-results-for-a-subset-of-baselines-and-variants-in-comparison-with-textar)
+6. [Download Dataset & Weights](#download-dataset-weights)
+7. [Citation](#citation)
+8. [Contact](#contact)
 
 ---
 
@@ -45,7 +46,7 @@ Predicting attributes from isolated word crops can be ambiguous—for instance, 
   <img 
     src="assets/attributes.png" 
     alt="Data Selection Pipeline" 
-    style="max-width: 60%; height: auto;" 
+    style="max-width: 30%; max-height: 30%;" 
 
 </div>
 
@@ -255,6 +256,7 @@ After inference , the output will be a json file where it contains all the predi
 }
 
 ```
+
 # Evaluation & Inference
 
 - **Metric:** We use the F1-score to balance precision and recall, making it robust to the natural class imbalance in attributes like bold, italic, underline, and strikeout.  
@@ -269,6 +271,7 @@ After inference , the output will be a json file where it contains all the predi
   
   />
 </div>
+
 # Download Dataset & Weights
 
 Model weights and the MMTAD testset can be downloaded from the [link]("https://zenodo.com). To get access to the full dataset, please contact [Dr. Ravi Kiran Sarvadevabhatla](mailto:ravi.kiran@iiit.ac.in.)
