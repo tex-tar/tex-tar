@@ -17,9 +17,10 @@
 ## Table of Contents
 
 1. [Getting Started](#getting-started)  
-2. [Project Overview](#project--overview)   
-3. [Outputs](#Outputs)  
-4. [Evaluation & Inference](#evaluation--inference)  
+2. [Project Overview](#project-overview)   
+3. [Outputs](#outputs)  
+4. [Evaluation & Inference](#evaluation-inference)  
+5. [Visualization of results for a subset of baselines and variants in comparison with TexTAR][#visualization-of-results-for-a-subset-of-baselines-and-variants-in-comparison-with-textar]
 5. [Citation](#citation)  
 6. [Contact](#contact)  
 
