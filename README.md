@@ -262,7 +262,7 @@ After inference , the output will be a json file where it contains all the predi
 - **Metric:** We use the F1-score to balance precision and recall, making it robust to the natural class imbalance in attributes like bold, italic, underline, and strikeout.  
 - **Inference Pipeline:** At test time, each image goes through our two-stage pipeline (bbox detection → context-window generation → model prediction). The model’s per-word attribute outputs are compared against ground truth using the F1 metric to quantify recognition performance.                                  
 
-# Visualization of results for a subset of baselines and variants in comparison with TexTAR
+<!-- # Visualization of results for a subset of baselines and variants in comparison with TexTAR
 <div align="center">
   <img 
     src="assets/results-comparision.png" 
@@ -270,7 +270,7 @@ After inference , the output will be a json file where it contains all the predi
     style="max-width: 60%; height: auto;" 
   
   />
-</div>
+</div> -->
 
 # Download Dataset & Weights
 
