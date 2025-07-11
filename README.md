@@ -273,7 +273,7 @@ After inference , the output will be a json file where it contains all the predi
 
 # Download Dataset and Weights
 
-Model weights and the MMTAD testset can be downloaded from the [link](https://zenodo.com). To get access to the full dataset, please contact [Dr. Ravi Kiran Sarvadevabhatla](mailto:ravi.kiran@iiit.ac.in.)
+Model weights and the MMTAD testset can be downloaded from the [link](https://zenodo.org/records/15857116). To get access to the full dataset, please contact [Dr. Ravi Kiran Sarvadevabhatla](mailto:ravi.kiran@iiit.ac.in.)
 
 # Citation
 Please use the following BibTeX entry for citation .
