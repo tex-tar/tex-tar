@@ -146,13 +146,10 @@ python3 data_pipeline.py
 ---
 
 ### 2. Inference  
-1. Open **`model_config.yaml`** and set:
-   ```yaml
-   purpose: test
-   ```  
-2. Execute:
+
+1. Execute:
    ```bash
-   python3 main.py
+   python3 main.py --test
    ```
 
 ---
@@ -169,20 +166,19 @@ We employ a **two-stage** training strategy:
    ```  
 2. Launch training:
    ```bash
-   python3 main.py
+   python3 main.py --mode train
    ```
 
 #### Stage 2 – RoPE Fine-Tuning  
 1. After Stage 1 finishes, note your best checkpoint path (e.g. `checkpoints/best.pt`).  
 2. In **`model_config.yaml`**, update:
    ```yaml
-   purpose: train
    pretrained: "checkpoints/best.pt"
    pretrained_function: freeze_backbone
    ```  
 3. Fine-tune:
    ```bash
-   python3 main.py
+   python3 main.py --train
    ```
 
 ---
@@ -274,6 +270,11 @@ After inference , the output will be a json file where it contains all the predi
 # Download Dataset and Weights
 
 Model weights and the MMTAD testset can be downloaded from the [link](https://zenodo.org/records/15857116). To get access to the full dataset, please contact [Dr. Ravi Kiran Sarvadevabhatla](mailto:ravi.kiran@iiit.ac.in.)
+To fetch them via our script, simply run:
+
+```bash
+bash download_weights.sh
+```
 
 # Citation
 Please use the following BibTeX entry for citation .

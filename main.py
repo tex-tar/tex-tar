@@ -2,6 +2,7 @@ import os
 import wandb
 import torch
 import torch.optim as optim
+import argparse
 from src.utils.run_utils import (
     set_seed, load_yaml,load_module,
     load_checkpoint
@@ -109,9 +110,21 @@ class Pipeline:
 if __name__=="__main__":
     cfg_path='config/model_config.yaml'
     pipeline = Pipeline(cfg_path)
-    if pipeline.purpose=='test':
-        pipeline.eval()
-    elif pipeline.purpose=='train':
+    parser = argparse.ArgumentParser(description="TexTAR Pipeline")
+    parser.add_argument(
+        "--config","-c",
+        default="config/model_config.yaml",
+        help="path to model_config.yaml",
+    )
+
+    args = parser.parse_args()
+    if args.mode:
+      pipeline.purpose = args.mode
+
+  # 3) dispatch
+    if pipeline.purpose == "train":
         pipeline.run()
+    elif pipeline.purpose == "test":
+        pipeline.eval()      # or you can introduce a separate test() if needed
     else:
-        print("Please enter a valid purpose for the pipeline.")
+        parser.error("unknown mode, must be one of train/test")
