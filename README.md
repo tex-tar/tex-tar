@@ -275,7 +275,14 @@ To fetch them via our script, simply run:
 ```bash
 bash download_weights.sh
 ```
+To download the dataset from huggingface, simply run 
+```bash
+pip install datasets
+from datasets import load_dataset
 
+ds = load_dataset("Tex-TAR/MMTAD")
+print(ds)
+```
 # Citation
 Please use the following BibTeX entry for citation .
 ```bibtex

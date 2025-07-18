@@ -4,3 +4,10 @@ __pycache__
 weights
 weights-textar-base
 weights_val_on_test
+run_dockerfile.sh
+textar-testset
+testset_labels.json
+hf_api.py
+MMTAD2
+MMTAD
+checkpoints
