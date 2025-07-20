@@ -1,37 +1,37 @@
+# push_test_split.py
+
 import json
-from datasets import Dataset, Features, Image, Sequence, Value
 from pathlib import Path
+from datasets import Dataset, Features, Image, Sequence, Value
 
-labels_path = "/projects/data/vision-team/swaroopa_jinka/TEXTAR/MMTAD/test/testset_labels.json"
-with open(labels_path, "r", encoding="utf-8") as f:
-    labels = json.load(f)
-    # labels: { "ncert-page_25.png": [ { bb_dim: [...], bb_ids: [...] }, … ], … }
+# 1) Load your labels.json
+labels = json.loads(Path("test/testset_labels.json").read_text())
 
-
+# 2) Build one record per image
 records = []
 for fname, ann_list in labels.items():
     records.append({
-        "image": str(Path("/projects/data/vision-team/swaroopa_jinka/TEXTAR/MMTAD/test/textar-testset") / fname),
+        "image": str(Path("test/textar-testset") / fname),
         "annotations": ann_list
     })
 
-# 3) Define the schema so Data Studio knows how to render each column
+# 3) Define the schema
 features = Features({
-    "image": Image(),                        # image preview
-    "annotations": Sequence({                # a list of dicts
+    "image": Image(decode=True),     # <— decode=True makes it embed the bytes
+    "annotations": Sequence({
         "bb_dim": Sequence(Value("int64"), length=4),
-        "bb_ids": Sequence({                 # sequence of word‐level dicts
+        "bb_ids": Sequence({
             "id":   Value("int64"),
             "ocrv": Value("string"),
-            "attb": {                        # nested attributes
-                "bold":      Value("bool"),
-                "italic":    Value("bool"),
-                "b+i":       Value("bool"),
-                "no_bi":     Value("bool"),
-                "no_us":     Value("bool"),
-                "underlined":Value("bool"),
-                "strikeout": Value("bool"),
-                "u+s":       Value("bool"),
+            "attb": {
+                "bold":       Value("bool"),
+                "italic":     Value("bool"),
+                "b+i":        Value("bool"),
+                "no_bi":      Value("bool"),
+                "no_us":      Value("bool"),
+                "underlined": Value("bool"),
+                "strikeout":  Value("bool"),
+                "u+s":        Value("bool"),
             }
         })
     })
@@ -40,5 +40,5 @@ features = Features({
 # 4) Create the Dataset
 ds = Dataset.from_list(records, features=features)
 
-# 5) Push to the Hub (requires login)
-ds.push_to_hub("Tex-TAR/MMTAD")
+# 5) Push *just* the test split (replace with your namespace/repo)
+ds.push_to_hub("Tex-Tar/MMTAD", split="test")

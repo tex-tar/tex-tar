@@ -11,3 +11,6 @@ hf_api.py
 MMTAD2
 MMTAD
 checkpoints
+dataset
+add_json
+run_dockerfile.sh
