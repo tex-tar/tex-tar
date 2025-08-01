@@ -14,3 +14,12 @@ checkpoints
 dataset
 add_json
 run_dockerfile.sh
+MMTAD*
+add_json.py
+hf_api.py
+hf_test.jsonl
+hf.py
+test-00000-of-00001.parquet
+test.py
+working.py
+checkpoints
