@@ -269,13 +269,13 @@ After inference , the output will be a json file where it contains all the predi
 
 # Download Dataset and Weights
 
-Model weights and the MMTAD testset can be downloaded from the [link](https://zenodo.org/records/15857116). To get access to the full dataset, please contact [Dr. Ravi Kiran Sarvadevabhatla](mailto:ravi.kiran@iiit.ac.in.)
+Model weights and the MMTAD testset can be downloaded from the [link](https://huggingface.co/Tex-TAR). To get access to the full dataset, please contact [Dr. Ravi Kiran Sarvadevabhatla](mailto:ravi.kiran@iiit.ac.in.)
 To fetch them via our script, simply run:
 
 ```bash
 bash download_weights.sh
 ```
-To download the dataset from huggingface, simply run 
+To load the dataset from huggingface, simply run 
 ```bash
 pip install datasets
 from datasets import load_dataset
@@ -284,7 +284,9 @@ ds = load_dataset("Tex-TAR/MMTAD")
 print(ds)
 ```
 # Citation
+
 Please use the following BibTeX entry for citation .
+
 ```bibtex
 @article{Kumar2025TexTAR,
   title   = {TexTAR: Textual Attribute Recognition in Multi-domain and Multi-lingual Document Images},
@@ -293,7 +295,6 @@ Please use the following BibTeX entry for citation .
             {ICDAR}},
   year    = {2025}
 }
-
 ```
 # Contact
 For any queries, please contact [Dr. Ravi Kiran Sarvadevabhatla](mailto:ravi.kiran@iiit.ac.in.)

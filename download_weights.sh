@@ -1,17 +1,16 @@
-# Use the "files" URL (not /preview/) and add ?download=1
-URL="https://zenodo.org/record/15857116/files/TEXTAR-CHECKPOINTS.zip?download=1"
-DEST="/code/"
+#!/usr/bin/env bash
+set -e
 
-# 1) Download the real ZIP
-wget -O weights.zip "$URL"
+REPO_URL="https://huggingface.co/datasets/Tex-TAR/MMTAD"
+LOCAL_DIR="MMTAD"
 
-# 2) Make sure it's a valid zip
-file weights.zip
-# You should see something like: Zip archive data, at least vX.Y to extract
+# Clone the repo
+git clone "$REPO_URL" "$LOCAL_DIR"
 
-# 3) Unpack it
-mkdir -p "$DEST"
-unzip -q weights.zip -d "$DEST"
+cd "$LOCAL_DIR"
 
-# 4) Clean up
-rm weights.zip
+
+git sparse-checkout init --cone
+git sparse-checkout set test
+
+echo "Fetched only the 'test/' split under $LOCAL_DIR/test/"
