@@ -264,10 +264,10 @@ After inference , the output will be a json file where it contains all the predi
     src="assets/results-comparision.png" 
     alt="Model Architecture" 
     style="max-width: 60%; height: auto;" 
-  
+  />
 </div>
 
-<h1 style="text-align:left">Download Dataset and Weights</h1>
+# Download Dataset and Weights
 
 Model weights and the MMTAD testset can be downloaded from the [link](https://huggingface.co/Tex-TAR). To get access to the full dataset, please contact [Dr. Ravi Kiran Sarvadevabhatla](mailto:ravi.kiran@iiit.ac.in.)
 To fetch them via our script, simply run:
