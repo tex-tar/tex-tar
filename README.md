@@ -267,7 +267,7 @@ After inference , the output will be a json file where it contains all the predi
   
 </div>
 
-# Download Dataset and Weights
+## Download Dataset and Weights
 
 Model weights and the MMTAD testset can be downloaded from the [link](https://huggingface.co/Tex-TAR). To get access to the full dataset, please contact [Dr. Ravi Kiran Sarvadevabhatla](mailto:ravi.kiran@iiit.ac.in.)
 To fetch them via our script, simply run:
@@ -283,7 +283,7 @@ from datasets import load_dataset
 ds = load_dataset("Tex-TAR/MMTAD")
 print(ds)
 ```
-# Citation
+## Citation
 
 Please use the following BibTeX entry for citation .
 
@@ -296,5 +296,5 @@ Please use the following BibTeX entry for citation .
   year    = {2025}
 }
 ```
-# Contact
+## Contact
 For any queries, please contact [Dr. Ravi Kiran Sarvadevabhatla](mailto:ravi.kiran@iiit.ac.in.)
